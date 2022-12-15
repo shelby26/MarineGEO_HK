@@ -1,0 +1,25 @@
+##Using Cutadapt to remove adapters from raw sequence data
+
+module load anaconda/py3
+source activate cutadapt
+
+#Forward Primer for COI: (remove adaptors and a bit trimmed to help find it)
+WGGWTGAACWGTWTAYCCYCC
+
+#Reverse Primer for COI (replace "I" with "N"): 
+#TAIACYTCIGGRTGICCRAARAAYCA
+TANACYTCNGGRTGNCCRAARAAYCA
+
+##gunzip everthing first, make fastq files
+gunzip *.fastq.gz   ##remember that it removes all original .gz files and replaces with fastq
+
+##write a do loop - run this in commandline on the data (super quick with 20 cores..)
+##cutadapt all forwards 
+for f in *1.fastq; do cutadapt -j 0 -g WGGWTGAACWGTWTAYCCYCC -o "${f%.*}"_trim.fastq "$f"; done
+
+##cutadapt all reverses
+for f in *2.fastq; do cutadapt -j 0 -g TANACYTCNGGRTGNCCRAARAAYCA -o "${f%.*}"_trim.fastq "$f"; done
+
+##now copy (could move but I like keeping lots of copies!) all of the trimmed files into their own directory so can export back and run on R
+mv *trim.fastq ../../adtrim/
+

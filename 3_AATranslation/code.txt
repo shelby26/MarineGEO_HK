@@ -1,0 +1,22 @@
+##Use MACSE to build an alignment from BIOCODE data from (Leray et al. xxx), 
+##align all new ASVs 
+##remove ASVs with non-sense proteins based on invert translations
+
+##Terminal on mac: put a copy of macse.jar into your working folder
+java -jar macse.jar -prog wrongProgram ##tests if you have right
+
+##Build alignment from BIOCODE data
+java -jar macse.jar -prog alignSequences -gc_def 5 -seq BIOCODE2014_MACSE_313.fasta -out_NT NT_align_BIOCODE.fasta -out_AA AA_align_BIOCODE.fasta
+
+##Add sequences to the alignemnt with "enrichAlign" only if they meet the criteria
+##set parameters for removal - "Sequences that had zero stop codons (STOP), zero frame- shifts (FS), zero insertions (INS), and no more than three deletions (DEL) of amino acids were retained.""
+
+java -jar -Xmx600m macse.jar -prog enrichAlignment -align NT_align_BIOCODE.fasta -seq ASVs_All.fasta -gc_def 5 -maxSTOP_inSeq 0 -maxDEL_inSeq 3 -maxFS_inSeq 0 -maxINS_inSeq 0 -fixed_alignment_ON -max_NT_trimmed 15
+
+seqkit seq NT_align_BIOCODE.fasta -n > IDsUnique.txt
+seqkit grep -f IDsUnique.txt ASVs_All.fasta -w 0 -o ASVs_clean.fasta
+seqkit seq ASVs_clean.fasta -n -i --id-regexp "^([^;]+)\;" -s >ASVs_cleanIDs.fasta
+
+##This can go directly to Qiime
+
+###MASCE filtered 1,723 sequences from ASVs_all

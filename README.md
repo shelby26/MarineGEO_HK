@@ -6,7 +6,7 @@ MarineGEO_HK working analyses
 Multistep data processing included:
 0_Raw sequence data
 
-1_import and trim adapters in linux
+1_RemoveAdaptors - use cutadapt in commandline to gunzip and trim F/R adapters
 
 2_dada2_quality control, filtering and chimera removal
 

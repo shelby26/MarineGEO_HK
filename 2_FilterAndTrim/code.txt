@@ -1,0 +1,212 @@
+##Use dada2 in R to filter and trim low quality sequences and remove chimeras
+##This was written to run in chunks as jobs on a super computer
+
+module load R/3.5.1  ##need older version to work with dada package
+R  ## starts up R
+
+##if you have been working and paused part way through you will need to load up the environment to continue. 
+load('myEnvironment.RData')
+
+##To save it all at the end
+save.image(file='myEnvironment.RData')
+
+#########################################
+## Trimming/Filtering -commandline     ##
+#########################################
+
+
+##load up the libraries. 
+library(dada2)
+library(ggplot2)
+library(ff)
+library(phyloseq) #don't really need this at first but fine
+library(gridExtra)
+
+----------------------------------------------
+QualityPlots.R
+----------------------------------------------
+
+path <- "/data/MarineGEO/adtrim"  ##should have all of your post adapter trimmed files here, including all fractions combined into 1 file
+head(list.files(path)) #eventually to check if the path works
+fns <-list.files(path)
+fns
+
+##File preparation
+#extracting Forward (fnFs) and Reverse (fnRs) reads from files
+
+fastqs <- fns[grepl(".fastq$", fns)]
+fastqs <- sort(fastqs) # Sort ensures forward/reverse reads are in same order
+fnFs <- fastqs[grepl("_1_trim", fastqs)] # Just the forward read files
+fnRs <- fastqs[grepl("_2_trim", fastqs)] # Just the reverse read files
+
+#fnFs <- sort(list.files(path, pattern = "_1_trim.fastq"))
+#fnRs <- sort(list.files(path, pattern = "_2_trim.fastq"))
+
+sample.names <- sapply(strsplit(fnFs, "_"), `[`, 1)
+
+fnFs <-file.path(path, fnFs)
+fnRs <-file.path(path, fnRs)
+
+
+#plotting quality profiles
+pdf("qprofile_fwd.pdf")
+plotQualityProfile(fnFs, aggregate = TRUE) + ggtitle("Forward")
+dev.off()
+
+pdf("qprofile_rev.pdf")
+print(plotQualityProfile(fnRs, aggregate = TRUE) + ggtitle("Reverse")
+dev.off()
+
+
+save.image(file='COI_QualityPlots.RData')
+
+
+----------------------------------------------
+FandTandE.R
+----------------------------------------------
+
+load('COI_QualityPlots.RData')
+
+#placing filtered files in a new filtered subdirectory
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq"))
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq"))
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+
+#filtering and trimming, here truncation at 200 (Fwd) and 150 (Rev) bp based on plots (QS>~35). Could also cut reverse at 200 for QS>30
+#2expected errors max (N discarded automatically)
+
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(210,150), maxN=0, maxEE=2, truncQ=2, rm.phix=TRUE, compress=TRUE, multithread=TRUE)
+
+head(out)#to check how filtering and trimming worked
+tail(out)#to check how filtering and trimming worked
+
+write.csv(out,file="/data/MarineGEO/adtrim/COI_FiltTrimStats.csv",quote=F)
+
+
+#learning error rates
+errF <- learnErrors(filtFs, multithread = TRUE)
+errR <- learnErrors(filtRs, multithread = TRUE)
+
+#plotting errors - plots and visualizations are annoying on the server, you have to save as PDFs to see them
+
+#Make a plot and save the PDF
+pdf("ErrorPlots_COI.pdf")   #make a file with a name
+par(mfrow = c(2,1))  #dimensions of the plots: row,column
+plotErrors(errF, nominalQ=TRUE)
+plotErrors(errR, nominalQ=TRUE)
+dev.off()	#close it
+
+
+save.image(file='COI_Fltrd_Tmd_LER.RData')
+
+---------------------------------------------------------------
+DRep_ISV_Mrg.R
+----------------------------------------------------------------
+
+##Dereplicating reads
+
+load('COI_Fltrd_Tmd_LER.RData')
+
+
+sam.names <- sapply(strsplit(basename(filtFs), "_"), `[`, 1)
+derepFs <- derepFastq(filtFs)
+names(derepFs) <- sam.names
+derepRs <- derepFastq(filtRs)
+names(derepRs) <- sam.names
+
+##Infering Sequence Variants
+dadaFs <- dada(derepFs, err = errF, multithread = TRUE)
+dadaFs[[1]]
+dadaRs <- dada(derepRs, err = errR, multithread = TRUE)
+dadaRs[[1]]
+
+##Merging paired ends
+mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs)
+
+# Inspect the merger data.frame from the first sample
+head(mergers[[1]])
+
+seqtab1 <- makeSequenceTable(mergers)
+dim(seqtab1)
+table(nchar(getSequences(seqtab1)))
+
+pdf("SeqTab1_COI.pdf")
+plot(table(nchar(getSequences(seqtab1))))
+dev.off()
+
+#eventually to keep sequences only within a certain range of size (here between
+#250 (cut off in Leray and Knowlton) and 350bp (no upper limit in publications so seem a safe overage))
+seqtab2 <- seqtab1[,nchar(colnames(seqtab1)) %in% seq(250,350)]
+dim(seqtab2)
+table(nchar(getSequences(seqtab2)))
+
+pdf("SeqTab2_COI.pdf")
+plot(table(nchar(getSequences(seqtab2))))
+dev.off()
+#using this range brought sequence number from 
+
+saveRDS(seqtab1, "/data/MarineGEO/adtrim/seqtab1.rds") #if any size selection
+saveRDS(seqtab2, "/data/MarineGEO/adtrim/seqtab2.rds") #if any size selection
+
+save.image(file='COI_DRep_ISV_Mrg.RData')
+
+
+
+-------------------------------------------------------------------
+COI_RemChandSeqTab.R
+-------------------------------------------------------------------
+
+load('COI_DRep_ISV_Mrg.RData')
+
+
+#identifying and removing chimeras
+seqtab2.nochim <- removeBimeraDenovo(seqtab2, method="consensus", multithread=TRUE,verbose=TRUE)
+dim(seqtab2.nochim)
+##Identified 984 bimeras out of 7082 input sequences. seems like a lot but actually a small portion of total reads as you can see below
+
+sum(seqtab2.nochim)/sum(seqtab2)
+##=0.9920363, so >99% are not chimeras, cool
+
+#tracking changes through each step
+getN <- function(x) sum(getUniques(x))
+track <-    cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN),
+                  sapply(mergers, getN), rowSums(seqtab2.nochim))
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR",
+                        "merged", "nonchim")
+rownames(track) <- sam.names
+
+
+saveRDS(seqtab2.nochim, "/data/MarineGEO/adtrim/seqtab2.nochim.rds")
+
+write.csv(track,file="/data/MarineGEO/adtrim/ReadFilterStats_COIALL.csv",row.names=TRUE,quote=FALSE)
+
+#seqtab.nochim is the 'ASV' table...but is a little unwieldy
+#want fasta file of 'ASVs' and table designated by 'ASV'
+
+
+path='/data/MarineGEO/adtrim/ASVs_All.fasta'
+uniquesToFasta(seqtab2.nochim, path, ids = NULL, mode = "w", width = 20000)
+
+#then, rename output table and write it out
+ids <- paste0("sq", seq(1, length(colnames(seqtab2.nochim))))
+seqtab2.nochim.renamed<-seqtab2.nochim #make copy of seqtab table to rename and reformat
+colnames(seqtab2.nochim.renamed)<-ids
+head(seqtab2.nochim.renamed)
+str(seqtab2.nochim.renamed)
+seqtab2.nochim.renamed<-as.data.frame(seqtab2.nochim.renamed)
+seqtab2.nochim.renamed[, 1:66] <- sapply(seqtab2.nochim.renamed[, 1:66], as.numeric)
+
+write.csv(seqtab2.nochim.renamed,file="/data/MarineGEO/adtrim/OutputDADA_ASVtable.csv",quote=F)
+
+"^\;([^\;]+)\;"
+
+"^(\\;+)\\;?"
+"^(\\S+)\\s?"
+"^gi\|([^\|]+)\|"
+
+"^([^;]+)\;"
+
+##For R in terminal
+save.image(file='COIALL_dada2complete.RData')

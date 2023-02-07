@@ -1,0 +1,995 @@
+---
+title: "PubFigs_Final"
+author: "SEM"
+date: '2023-02-07'
+output: html_document
+---
+
+```{r, setup, include=FALSE}
+
+
+library(dplyr)
+library(phyloseq)
+library(qiime2R)
+library(tidyr)
+library(MicrobiotaProcess)
+library(cowplot)
+
+#library(decontam)
+#library(ggplot2)
+#library(tm)
+#library(RColorBrewer)
+#library(colorRamps)
+#library(readr)
+#library(vegan)
+#library(picante)
+#library(Biostrings)
+#library(adegenet)
+#library(plyr)
+#library(igraph)
+#library(networkD3)
+#library(reshape)
+#library(ggtern)
+#library(MetBrewer)
+#library(chisq.posthoc.test)
+#library(ggbiplot)
+#library(ggvenn)
+
+
+knitr::opts_knit$set(root.dir = '~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working')
+#setwd("~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working")
+
+
+```
+
+
+# Import Data Files for sequences, metadata, and taxonomy (x3) - note the raw files
+
+```{r import}
+COI_data<-read_qza("5_Qiime/table-dn-97.qza")$data ##OTUs clustered at 97%
+
+COI_bases<-read_qza("5_Qiime/rep-seqs-dn-97.qza")$data ##OTUs clustered at 97%
+
+COI_meta<-read.table("COI_Final_working/meta_slim.csv",header = T, sep = ",") 
+
+COI_taxa_GEOME_95<-read_qza("5_Qiime/CoA_HK_CM_tax_95match_23June2022.qza")$data %>% parse_taxonomy() #taxonomic matches at 95% against coarbiter, hong kong barcode samples, and additional GEOME samples from Chris
+
+COI_taxa_GEOME_80<-read_qza("5_Qiime/CoA_HK_CM_tax_80match_23June2022.qza")$data %>% parse_taxonomy() #taxonomic matches at 80% against coarbiter, hong kong barcode samples, and additional GEOME samples from Chris
+
+COI_taxa_LCA<-read.csv("COI_Final_working/LCA_Blast.csv",header=T) #taxonomic matches based on Least Common Ancestor in Genbank analysis performed by Matt Leray
+
+```
+
+# Import and format the taxonomy files
+
+```{r GEOME, include=FALSE}
+
+SourceID<-rep("95_Match",length(COI_taxa_GEOME_95$Kingdom))
+COI_taxa_GEOME_95<-cbind(COI_taxa_GEOME_95,SourceID)
+COI_taxa_GEOME_95$Seq<-rownames(COI_taxa_GEOME_95)
+rownames(COI_taxa_GEOME_95)<-NULL
+COI_taxa_wUnK<-COI_taxa_GEOME_95
+COI_taxa_GEOME_95<-filter(COI_taxa_GEOME_95,Kingdom=="Metazoa"|Kingdom=="Metazoainvertebrate_environmental_sample")
+
+COI_taxa_GEOME_80<-filter(COI_taxa_GEOME_80,Kingdom=="Metazoa"|Kingdom=="Metazoainvertebrate_environmental_sample")
+SourceID<-rep("80_Match",length(COI_taxa_GEOME_80$Kingdom))
+COI_taxa_GEOME_80<-cbind(COI_taxa_GEOME_80,SourceID)
+COI_taxa_GEOME_80$Seq<-rownames(COI_taxa_GEOME_80)
+rownames(COI_taxa_GEOME_80)<-NULL
+
+COI_taxa<-bind_rows(COI_taxa_GEOME_95,COI_taxa_GEOME_80,COI_taxa_LCA)
+
+```
+
+# Combine taxonomic data files (1) include 95% matches, (2) add 80% matches, (3) add LCA matches. Format file for import to phyloseq
+
+```{r datareformat1, include=FALSE}
+c<-filter(COI_taxa,SourceID=="95_Match")
+c<-filter(c,Class!="Insecta"&Class!="Arachnida")
+m<-filter(COI_taxa,SourceID=="80_Match")
+m[,3:7]<-NA #remove taxonomic info beyond phylum
+m_u<-setdiff(m$Seq,c$Seq)
+m_uni<-filter(m,Seq %in% m_u)
+mc<-rbind(c,m_uni)
+lca<-filter(COI_taxa,SourceID=="LCA_Blast")
+lca[,3:7]<-NA #remove taxonomic info beyond phylum
+lca_u<-setdiff(lca$Seq,mc$Seq)
+lca_uni<-filter(lca,Seq %in% lca_u)
+COI_taxa1<-rbind(mc,lca_uni)
+COI_taxa1<-COI_taxa1 %>% mutate_all(na_if,"")
+COI_taxa1<-select(COI_taxa1,-X)
+
+##figuring out how to mark indicator species from later
+Seq<-c(lowlist,highlist)
+indtype<-c(rep("low",length(lowlist)),rep("high",length(highlist)))
+ind.df<-as.data.frame(cbind(Seq,indtype))
+COI_taxa1<-full_join(COI_taxa1,ind.df,by="Seq")
+
+##Include this to keep Unknown seqs##
+uk_u<-setdiff(COI_taxa_wUnK$Seq,COI_taxa1$Seq)
+uk_uni<-filter(COI_taxa_wUnK,Seq %in% uk_u)
+uk_uni$indtype<-rep(NA,length(uk_uni$Phylum))
+COI_taxa2<-rbind(COI_taxa1,uk_uni)
+
+rownames(COI_taxa2)<-COI_taxa2$Seq
+COI_taxa2<-select(COI_taxa2,-Seq)
+COI_taxa2<-select(COI_taxa2,-SourceID)
+COI_taxa2<-as.data.frame(COI_taxa2)
+COI_taxa2$Phylum<-COI_taxa2$Phylum %>% replace_na('Unassigned')
+COI_taxa3<-as.matrix(COI_taxa2)
+
+
+```
+
+# Format sequence data
+
+```{r datareformat2, include=FALSE}
+intaxa<-rownames(COI_taxa3)
+COI_seq<-t(COI_data)  #switch rows and columns
+COI_seq1<-as.data.frame(COI_seq)   #get rid of weird atomic vector "1d" thing
+COI_seq2<-select(COI_seq1,all_of(intaxa))
+COI_seq2<-as.matrix(COI_seq2)       #get rid of weird atomic vector "1d" thing
+
+```
+
+# Format the site metadata
+
+```{r datareformat3, include=FALSE}
+COI_meta1<-COI_meta
+rownames(COI_meta1)<-COI_meta1$Sample_ID
+COI_meta1<-COI_meta1[,-1]
+COI_meta1<-COI_meta1 %>% mutate_if(is.character,as.factor)
+```
+
+# Make a phyloseq object
+
+```{r phyloseq, include=FALSE}
+
+ps <- phyloseq(otu_table(COI_seq2, taxa_are_rows=FALSE), 
+                       tax_table(COI_taxa3),
+                       sample_data(COI_meta1),    #)
+                       refseq(COI_bases))
+```
+
+# Remove contamination based on the negative control. Plot read abundance of negative controls and all individual ARMS fractions 
+
+```{r decontam, include=FALSE}
+library(decontam)
+library(ggplot2)
+df <- as.data.frame(sample_data(ps))
+df$LibrarySize <- sample_sums(ps)
+df <- df[order(df$LibrarySize),]
+df$Index <- seq(nrow(df))
+ggplot(data=df, aes(x=Index, y=LibrarySize, color=Station_ID)) + geom_point()
+
+sample_data(ps)$is.neg <- sample_data(ps)$Station_ID == "control"
+contamdf.prev05 <- isContaminant(ps, method="prevalence", neg="is.neg", threshold=0.5)
+#table(contamdf.prev$contaminant) #Use this to see count of contaminants
+contam<-head(which(contamdf.prev05$contaminant))
+contam_seq<-rownames(contamdf.prev05[c(contam),])
+
+otu_table(ps)<-otu_table(ps)[!(row.names(otu_table(ps)) %in% contam_seq),]
+ps <- subset_samples(ps, Ret_ID != "control")
+ps <- prune_taxa(taxa_sums(ps)>0,ps) #gets rid of everything only found in controls
+
+
+#ps %>%
+#      refseq() %>%
+#      Biostrings::writeXStringSet("~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working/COI_Final_working/ps_asv.fasta", append=FALSE, compress=FALSE, compression_level=NA, format="fasta")
+
+```
+
+# Merge size fractions for individual ARMS level analysis
+
+```{r phyloseq2, include=FALSE}
+
+#ps_2017<-subset_samples(ps, Month_Ret =="OCT")
+#ps_2017<- prune_taxa(taxa_sums(ps_2017)>0,ps_2017)
+
+#write.csv(ps_2017@otu_table,file="OTUtab_2017.csv")
+#write.csv(ps_2017@tax_table ,file="TAXtab_2017.csv")
+#write.csv(ps_2017@sam_data ,file="SAMtab_2017.csv")
+
+ps_a<-merge_samples(ps,"ARMS_ID") #merge the size fractions into ARMS
+sample_data(ps_a)$Ret_ID <- levels(sample_data(ps)$Ret_ID)[get_variable(ps_a, "Ret_ID")]
+sample_data(ps_a)$ARMS_ID <- levels(sample_data(ps)$ARMS_ID)[get_variable(ps_a, "ARMS_ID")]
+sample_data(ps_a)$Size_Fraction <- levels(sample_data(ps)$Size_Fraction)[get_variable(ps_a, "Size_Fraction")]
+sample_data(ps_a)$Station_ID <- levels(sample_data(ps)$Station_ID)[get_variable(ps_a, "Station_ID")]
+sample_data(ps_a)$Month_Ret <- levels(sample_data(ps)$Month_Ret)[get_variable(ps_a, "Month_Ret")]
+sample_data(ps_a)$Impact <- levels(sample_data(ps)$Impact)[get_variable(ps_a, "Impact")]
+
+ps_a_pa<-ps_a
+ps_a_pa@otu_table[1:53,][ps_a_pa@otu_table[1:53,]>0]<-1 
+
+ps_a_2019<-subset_samples(ps_a, Month_Ret !="OCT")
+ps_a_2019<- prune_taxa(taxa_sums(ps_a_2019)>0,ps_a_2019)
+
+ps_a_pa_2019<-subset_samples(ps_a_pa, Month_Ret !="OCT")
+ps_a_pa_2019<- prune_taxa(taxa_sums(ps_a_pa_2019)>0,ps_a_pa_2019)
+
+ps_a_known<-subset_taxa(ps_a_2019, Phylum !="Unassigned")
+ps_a_known<- prune_taxa(taxa_sums(ps_a_known)>0,ps_a_known)
+
+ps_a_pa_known<-subset_taxa(ps_a_pa_2019, Phylum !="Unassigned")
+ps_a_pa_known<-prune_taxa(taxa_sums(ps_a_pa_known)>0,ps_a_pa_known)
+
+```
+
+# Merge size fractions and ARMS for Station level analysis - 2019
+
+```{r phyloseq_2, include=FALSE}
+
+ps_2019<-subset_samples(ps, Month_Ret !="OCT")
+
+ps_2019_s<-merge_samples(ps_2019,"Station_ID") #merge the size fractions into ARMS
+sample_data(ps_2019_s)$Ret_ID <- levels(sample_data(ps_2019)$Ret_ID)[get_variable(ps_2019_s, "Ret_ID")]
+sample_data(ps_2019_s)$ARMS_ID <- levels(sample_data(ps_2019)$ARMS_ID)[get_variable(ps_2019_s, "ARMS_ID")]
+sample_data(ps_2019_s)$Size_Fraction <- levels(sample_data(ps_2019)$Size_Fraction)[get_variable(ps_2019_s, "Size_Fraction")]
+sample_data(ps_2019_s)$Station_ID <- levels(sample_data(ps_2019)$Station_ID)[get_variable(ps_2019_s, "Station_ID")]
+sample_data(ps_2019_s)$Month_Ret <- levels(sample_data(ps_2019)$Month_Ret)[get_variable(ps_2019_s, "Month_Ret")]
+sample_data(ps_2019_s)$Impact <- levels(sample_data(ps_2019)$Impact)[get_variable(ps_2019_s, "Impact")]
+
+
+ps_s_pa_2019<-ps_2019_s
+ps_s_pa_2019@otu_table[1:7,][ps_s_pa_2019@otu_table[1:7,]>0]<-1 
+ps_s_pa_2019<- prune_taxa(taxa_sums(ps_s_pa_2019)>0,ps_s_pa_2019)
+
+ps_s_known<-subset_taxa(ps_2019_s, Phylum !="Unassigned")
+ps_s_known<-prune_taxa(taxa_sums(ps_s_known)>0,ps_s_known)
+
+ps_s_pa_known<-subset_taxa(ps_s_pa_2019, Phylum !="Unassigned")
+ps_s_pa_known<-prune_taxa(taxa_sums(ps_s_pa_known)>0,ps_s_pa_known)
+
+ps_i_pa_known<-merge_samples(ps_2019,"Impact")
+sample_data(ps_i_pa_known)$Impact <- levels(sample_data(ps_2019)$Impact)[get_variable(ps_i_pa_known, "Impact")]
+sample_data(ps_i_pa_known)$Month_Ret <- levels(sample_data(ps_2019)$Month_Ret)[get_variable(ps_i_pa_known, "Month_Ret")]
+
+ps_i_pa_known<-subset_taxa(ps_i_pa_known, Phylum !="Unassigned")
+ps_i_pa_known@otu_table[1:3,][ps_i_pa_known@otu_table[1:3,]>0]<-1 
+ps_i_pa_known<- prune_taxa(taxa_sums(ps_i_pa_known)>0,ps_i_pa_known)
+```
+
+
+# Set up colors and plot settings
+
+```{r plotsetting, include=FALSE}
+library(MetBrewer)
+library(RColorBrewer)
+
+y32<-c(met.brewer("Hokusai1",20),met.brewer("Hokusai3",12))
+set.seed(126)
+y32<-sample(y32,32)
+
+y<-brewer.pal(8,"Dark2")
+
+arms_order_2019<-c("ARMS_52","ARMS_53","ARMS_54","ARMS_28","ARMS_29","ARMS_30","ARMS_49","ARMS_50","ARMS_51","ARMS_31","ARMS_32","ARMS_33","ARMS_34","ARMS_35","ARMS_36","ARMS_13","ARMS_14","ARMS_15","ARMS_46","ARMS_47","ARMS_48","ARMS_25","ARMS_27","ARMS_43","ARMS_44","ARMS_45","ARMS_22","ARMS_23","ARMS_24","ARMS_40","ARMS_41","ARMS_42","ARMS_19","ARMS_20","ARMS_21","ARMS_37","ARMS_38","ARMS_39","ARMS_16","ARMS_17","ARMS_18")
+
+Phy_order_2019<-c("Arthropoda","Annelida","Mollusca","Cnidaria","Porifera","Rhodophyta","Bacillariophyta","Bryozoa","Chordata","Echinodermata","Ochrophyta","Platyhelminthes","Nematoda","Gastrotricha","Nemertea","Entoprocta","Chlorophyta","Sipuncula","Discosea","Oomycota","Basidiomycota","Streptophyta","Chaetognatha","Xenacoelomorpha","Cercozoa","Haptista","Placozoa","Brachiopoda","Hemichordata","Kinorhyncha","Rotifera","Unassigned")
+
+site_order_2019<-c('SSW','PC','CI','SW','CDA','BI','TPC')
+c1<-as.vector(met.brewer("Cross"))
+site_colors<-c(c1[1:2],c1[4:8])
+arms_by_site_col<-c(rep(site_colors[1],6),rep(site_colors[2],6),rep(site_colors[3],6),rep(site_colors[4],5),rep(site_colors[5],6),rep(site_colors[6],6),rep(site_colors[7],6))
+ycol<-c(rep(c1[1],18),rep(c1[5],5),rep(c1[9],18))
+```
+
+# Plot species accumulation curves
+
+```{r spec, echo=FALSE, warning=FALSE}
+sp1<-specaccum((otu_table(ps_a_2019)),subset = TRUE, method='exact',permutations = 500)
+#mod1 <- fitspecaccum(sp1, "lomolino")
+
+sp2<-specaccum((otu_table(ps_a_known)),subset = TRUE, method='exact',permutations = 500)
+#mod2 <- fitspecaccum(sp2, "lomolino")
+
+mod<-rep(c("all","all known"),times=c(length(sp1$sites),length(sp2$sites)))
+sites<-c(sp1$sites,sp2$sites)
+rich<-c(sp1$rich,sp2$rich)
+sd<-c(sp1$sd,sp2$sd)
+
+sac<-cbind(mod,sites,rich,sd)
+sac<-as.data.frame(sac)
+sac$sites<-as.numeric(sac$sites)
+sac$rich<-as.numeric(sac$rich)
+sac$sd<-as.numeric(sac$sd)
+
+ggplot(sac,aes(x=sites,y=rich,color=mod))+
+  geom_line()+
+  geom_point(size=1)+
+  geom_linerange(aes(ymin=rich-sd, ymax=rich+sd))+
+  scale_color_manual(values=c("grey","black"),labels=c("All OTUs","Phylum Assigned OTUs"),limits=c("all", "all known"))+
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.6),legend.title = element_blank())+
+  ylab("OTU Richness")+
+  xlab("Number of ARMS")
+
+
+#ps_a_known_H<-subset_samples(ps_a_known,Impact=="High")
+#sp_H<-specaccum((otu_table(ps_a_known_H)),subset = TRUE, method='exact',permutations = 500)
+#plot(sp_H,ci.type="poly", col="blue", lwd=2, ci.lty=0, ci.col="lightblue")
+#ps_a_known_L<-subset_samples(ps_a_known,Impact=="Low")
+#sp_L<-specaccum((otu_table(ps_a_known_L)),subset = TRUE, method='exact',permutations = 500)
+
+ps_a_known_H<-subset_samples(ps_a_2019,Impact=="High")
+ps_a_known_H<- prune_taxa(taxa_sums(ps_a_known_H)>0,ps_a_known_H)
+sp_H<-specaccum((otu_table(ps_a_known_H)),subset = TRUE, method='exact',permutations = 500)
+#plot(sp_H,ci.type="poly", col="blue", lwd=2, ci.lty=0, ci.col="lightblue")
+ps_a_known_L<-subset_samples(ps_a_2019,Impact=="Low")
+ps_a_known_L<- prune_taxa(taxa_sums(ps_a_known_L)>0,ps_a_known_L)
+sp_L<-specaccum((otu_table(ps_a_known_L)),subset = TRUE, method='exact',permutations = 500)
+
+mod_i<-rep(c("high","low"),times=c(length(sp_H$sites),length(sp_L$sites)))
+sites_i<-c(sp_H$sites,sp_L$sites)
+rich_i<-c(sp_H$rich,sp_L$rich)
+sd_i<-c(sp_H$sd,sp_L$sd)
+
+sac_i<-cbind(mod_i,sites_i,rich_i,sd_i)
+sac_i<-as.data.frame(sac_i)
+sac_i$sites_i<-as.numeric(sac_i$sites_i)
+sac_i$rich_i<-as.numeric(sac_i$rich_i)
+sac_i$sd_i<-as.numeric(sac_i$sd_i)
+
+ggplot(sac_i,aes(x=sites_i,y=rich_i,color=mod_i))+
+  geom_line()+
+  geom_point(size=1)+
+  geom_linerange(aes(ymin=rich_i-sd_i, ymax=rich_i+sd_i))+
+  #scale_color_manual(values=c("grey","black"),labels=c("All OTUs","Phylum Assigned OTUs"),limits=c("all", "all known"))+
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.6),legend.title = element_blank())+
+  ylab("OTU Richness")+
+  xlab("Number of ARMS")
+
+```
+
+```{r geospec, echo=FALSE, warning=FALSE}
+geoSac<-read.csv(file="COI_GeoARMS.csv",header=TRUE)
+
+ggplot(data=geoSac,aes(x=sites,y=rich,color=mod))+
+  geom_line()+
+  geom_linerange(aes(ymin=rich-sd, ymax=rich+sd))+
+  #scale_fill_manual(labels=c(""))
+  scale_color_manual(values=y,labels=c("South China Sea; PRD - All OTUs","South China Sea; PRD - Low Impact","South China Sea; PRD - High Impact", "Red Sea; Saudi Arabia", "West Atlantic; Florida", "West Atlantic; Virginia", "South China Sea; Singapore"),limits=c("HK_all","HK_low","HK_high","Red_Sea","Florida","Virginia","Singapore"))+
+  #scale_color_manual(values=y)+
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.6),legend.title = element_blank())+
+  ylab("OTU Richness")+
+  xlab("Number of ARMS")
+
+```
+
+
+
+
+```{r OTUtables, include=FALSE}
+
+#2019 by station ALL
+Phyfac_2019 = factor(tax_table(ps_s_pa_2019)[, "Phylum"])
+# Tabulate the counts for each genera in each sample
+OTUtab_s_unique_2019 = apply(otu_table(ps_s_pa_2019), MARGIN = 1, function(x) {
+    tapply(x, INDEX = Phyfac_2019, FUN = sum, na.rm = F, simplify = TRUE)
+})
+
+OTUtab_s_unique_2019_chi<-subset(OTUtab_s_unique_2019,rowSums(OTUtab_s_unique_2019)>40)
+
+knitr::kable(OTUtab_s_unique_2019_chi,caption="Unique OTUs per Phylum")
+
+#OTUtab_s_unique_2019<-subset(OTUtab_s_unique_2019,rowSums(OTUtab_s_unique_2019)>30)
+Phy.chisq<-chisq.test(OTUtab_s_unique_2019_chi)
+Phy.chisq.posthoc<-chisq.posthoc.test(OTUtab_s_unique_2019_chi,method = "bonferroni")
+
+Phy.chisq$expected
+Phy.chisq.posthoc
+
+knitr::kable(Phy.chisq.posthoc,caption="Post-hoc comparisons of Phyla")
+
+```
+
+# Plot OTU Richness by phylum
+
+```{r plot_by_phy_2019, fig.show="hold", out.width="50%", echo=FALSE, warning=FALSE}
+
+library(scales)
+
+Phyfac_2019 = factor(tax_table(ps_a_pa_2019)[, "Phylum"])
+# Tabulate the counts for each genera in each sample
+OTUtab_a_unique_2019 = apply(otu_table(ps_a_pa_2019), MARGIN = 1, function(x) {
+    tapply(x, INDEX = Phyfac_2019, FUN = sum, na.rm = F, simplify = TRUE)
+})
+OTUtab_a_unique_2019<-as.data.frame(as.table(OTUtab_a_unique_2019))
+OTUtab_a_unique_2019$Var1<-factor(OTUtab_a_unique_2019$Var1,levels=c(Phy_order_2019))
+
+ggplot(OTUtab_a_unique_2019,aes(x=Var2,y=Freq,fill=Var1,order=as.factor(Var1)))+
+  geom_col(position = "fill")+
+  scale_x_discrete(limits=c(arms_order_2019),)+
+  panel_border() +
+  scale_fill_manual(values=y32)+
+  scale_y_continuous(expand=expansion(c(0,0)),labels = label_number(accuracy = 0.1)) +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, colour = ycol))+
+  ylab("Proportion of OTUs per Phylum")+
+  xlab("ARMS")+
+  labs(fill = "Phylum")
+
+#2019 by station KNOWN
+Phyfac_2019_known = factor(tax_table(ps_s_pa_known)[, "Phylum"])
+# Tabulate the counts for each genera in each sample
+OTUtab_s_unique_2019_known = apply(otu_table(ps_s_pa_known), MARGIN = 1, function(x) {
+    tapply(x, INDEX = Phyfac_2019_known, FUN = sum, na.rm = F, simplify = TRUE)
+})
+OTUtab_s_unique_2019_known<-as.data.frame(as.table(OTUtab_s_unique_2019_known))
+OTUtab_s_unique_2019_known$Var1<-factor(OTUtab_s_unique_2019_known$Var1,levels=c(Phy_order_2019))
+
+ggplot(OTUtab_s_unique_2019_known)+
+  geom_col(aes(x=Var2,y=Freq,fill=Var1,order=as.factor(Var1)))+
+  scale_x_discrete(limits=c('SSW','PC','CI','SW','CDA','BI','TPC'),)+
+  panel_border() +
+  scale_fill_manual(values=y32)+
+  scale_y_continuous(expand=expansion(c(0,0.22))) +
+  theme_classic()+
+  ylab("Number of Unique OTUs per Phylum")+
+  xlab("Location")+
+  labs(fill = "Phylum")
+
+
+
+```
+
+
+# Statistical Comparison of species richness in High Impact (SSW, PC, CI) and Low Impact (CDA, BI, TPC). SW, as the only "medium" impact site was not included in the analysis. Season (Ret_ID) was also tested. (1) results including all data, (2) results of known phyla only 
+
+```{r diversity_stats, echo=FALSE}
+library(car)
+
+HvL_all<-subset_samples(ps_a_pa_2019, Station_ID!="SW")
+p_rich5<-plot_richness(HvL_all,x="Station_ID",color="Station_ID",measures=c("Observed"))
+summary(aov(p_rich5$data$value~p_rich5$data$Impact*p_rich5$data$Month_Ret))
+
+shapiro.test(p_rich5$data$value)
+leveneTest(p_rich5$data$value,p_rich5$data$Ret_ID)
+
+HvL<-subset_samples(ps_a_pa_known, Station_ID!="SW")
+p_rich4<-plot_richness(HvL,x="Station_ID",color="Station_ID",measures=c("Observed"))
+summary(aov(p_rich4$data$value~p_rich4$data$Impact*p_rich4$data$Month_Ret))
+
+shapiro.test(p_rich4$data$value)
+leveneTest(p_rich4$data$value,p_rich4$data$Ret_ID)
+
+```
+
+
+
+# PCoAs
+
+```{r PCoAs, echo=FALSE, message=FALSE, results='hide',fig.show="hold", out.width="50%"}
+
+ps_a_pa_2019@sam_data$Station_ID<-factor(ps_a_pa_2019@sam_data$Station_ID, levels=c("SSW","PC","CI","SW","CDA","BI","TPC"))
+
+ps.ord_p_pa<-ordinate(ps_a_pa_2019,"PCoA","jaccard")
+
+plot_ordination(ps_a_pa_2019,ps.ord_p_pa,type="samples",color="Station_ID",shape="Month_Ret",title="PcOA jaccard - All OTUs")+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c("SSW","PC","CI","SW","CDA","BI","TPC"))+
+  geom_point(size = 3)+
+  stat_ellipse(aes(group=Impact),show.legend=FALSE, alpha=0.4, type="norm")+
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))
+
+HvL_meta<-as(sample_data(HvL),"data.frame")
+HvL_aov<-adonis(distance(HvL,method="jaccard")~Impact, data=HvL_meta)
+HvL_aov$aov.tab
+
+ps_a_pa_known@sam_data$Station_ID<-factor(ps_a_pa_known@sam_data$Station_ID, levels=c("SSW","PC","CI","SW","CDA","BI","TPC"))
+ps.ord_ps_a_pa_known<-ordinate(ps_a_pa_known,"PCoA","jaccard")
+
+plot_ordination(ps_a_pa_known,ps.ord_ps_a_pa_known,type="samples",color="Station_ID",shape="Month_Ret",title="PcOA jaccard - Known phyla")+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c("SSW","PC","CI","SW","CDA","BI","TPC"))+
+  geom_point(size = 3)+
+  stat_ellipse(aes(group=Impact), alpha=0.4)+
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))
+
+HvL_all_meta<-as(sample_data(HvL_all),"data.frame")
+HvL_all_aov<-adonis(distance(HvL_all,method="jaccard")~Impact, data=HvL_all_meta)
+HvL_all_aov$aov.tab
+
+```
+
+# Histogram of OTU sharing
+
+```{r uniques, echo=FALSE, message=FALSE, results='hide',fig.show="hold", out.width="50%"}
+s_hist<-taxa_sums(ps_s_pa_2019)
+s_hist<-as.data.frame(s_hist)
+
+a_hist<-taxa_sums(ps_a_pa_2019)
+a_hist<-as.data.frame(a_hist)
+
+h<-ggplot(s_hist,aes(x=s_hist))+
+  geom_histogram(binwidth = 1,color="black", fill="grey")+
+  xlab("Total Number of Sites") +
+  ylab("Number of OTUs")+
+  scale_y_continuous(expand=expansion(c(0,0.2))) +
+  scale_x_continuous(expand=expansion(c(0.01,0.2)),breaks = c(1,2,3,4,5,6,7)) +
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "white", fill=NA, size=1))+
+  ggtitle("Frequency of OTU sharing, All OTUs")
+
+ggplot(a_hist,aes(x=a_hist))+
+  geom_histogram(binwidth = 1,color="black", fill="grey")+
+  xlab("Total Number of ARMS") +
+  ylab("Number of OTUs")+
+  scale_y_continuous(expand=expansion(c(0,0.2))) +
+  scale_x_continuous(expand=expansion(c(0.01,0.2)),breaks = c(1,2,3,4,5,6,7)) +
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "white", fill=NA, size=1))+
+  ggtitle("Frequency of OTU sharing, All OTUs")
+
+s_hist_k<-taxa_sums(ps_s_pa_known)
+s_hist_k<-as.data.frame(s_hist_k)
+
+a_hist_k<-taxa_sums(ps_a_pa_known)
+a_hist_k<-as.data.frame(a_hist_k)
+
+ggplot(s_hist_k,aes(x=s_hist_k))+
+  geom_histogram(binwidth = 1,color="black", fill="grey")+
+  xlab("Total Number of Sites") +
+  ylab("Number of OTUs")+
+  scale_y_continuous(expand=expansion(c(0,0.2))) +
+  scale_x_continuous(breaks = c(1,2,3,4,5,6,7),expand=expansion(c(0.01,0.2))) +
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "white", fill=NA, size=1))+
+  ggtitle("Frequency of OTU sharing, assigned OTUs")
+```
+
+# Look further into patterns withing Phyla including Arthropoda, Annelida, and Mollusca.
+
+# Import phylogenetic trees made for individual phyla within qiime2. (at final analysis may need to make these again, could be a few more identified sequences from updated taxa files)
+
+```{r importtrees, echo = FALSE }
+
+setwd("~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working")
+rpt_arth<-read_qza("COI_Final_working/arth-root-tree.qza")$data   ##data table, rooted phylogenetic tree
+rpt_ann<-read_qza("COI_Final_working/ann-root-tree.qza")$data   ##data table, rooted phylogenetic tree
+rpt_moll<-read_qza("COI_Final_working/moll-root-tree.qza")$data   ##data table, rooted phylogenetic tree
+
+ps_arth<-subset_taxa(ps_a_pa_2019,Phylum=="Arthropoda")
+ps_arth<-merge_phyloseq(ps_arth,rpt_arth)
+
+ps_ann<-subset_taxa(ps_a_pa_2019,Phylum=="Annelida")
+ps_ann<-merge_phyloseq(ps_ann,rpt_ann)
+
+ps_moll<-subset_taxa(ps_a_pa_2019,Phylum=="Mollusca")
+ps_moll<-merge_phyloseq(ps_moll,rpt_moll)
+
+ps_arth_s<-subset_taxa(ps_s_pa_2019,Phylum=="Arthropoda")
+ps_arth_s<-subset_taxa(ps_s_pa_known,Phylum=="Arthropoda")
+ps_arth_s<-merge_phyloseq(ps_arth_s,rpt_arth)
+ps_arth_s@sam_data$Station_ID<-factor(ps_arth_s@sam_data$Station_ID, levels=c("SSW","PC","CI","SW","CDA","BI","TPC"))
+
+ps_ann_s<-subset_taxa(ps_s_pa_2019,Phylum=="Annelida")
+ps_ann_s<-subset_taxa(ps_s_pa_known,Phylum=="Annelida")
+ps_ann_s<-merge_phyloseq(ps_ann_s,rpt_ann)
+ps_ann_s@sam_data$Station_ID<-factor(ps_ann_s@sam_data$Station_ID, levels=c("SSW","PC","CI","SW","CDA","BI","TPC"))
+
+ps_moll_s<-subset_taxa(ps_s_pa_2019,Phylum=="Mollusca")
+ps_moll_s<-subset_taxa(ps_s_pa_known,Phylum=="Mollusca")
+ps_moll_s<-merge_phyloseq(ps_moll_s,rpt_moll)
+ps_moll_s@sam_data$Station_ID<-factor(ps_moll_s@sam_data$Station_ID, levels=c("SSW","PC","CI","SW","CDA","BI","TPC"))
+
+
+```
+
+
+# Calculate adjusted phylogenetic distances (MPD and MNTD) for each Phyla on each ARMS 
+
+```{r phydist_ARMS, echo = FALSE }
+##BY ARMS
+library(picante)
+phydist_arth<-cophenetic(rpt_arth)
+comm_arth<-as.data.frame(ps_arth@otu_table)
+ses.mpd.result.arth<-ses.mpd(comm_arth,phydist_arth,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+ses.mntd.result.arth<-ses.mntd(comm_arth,phydist_arth,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+
+phydist_ann<-cophenetic(rpt_ann)
+comm_ann<-as.data.frame(ps_ann@otu_table)
+ses.mpd.result.ann<-ses.mpd(comm_ann,phydist_ann,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+ses.mntd.result.ann<-ses.mntd(comm_ann,phydist_ann,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+
+phydist_moll<-cophenetic(rpt_moll)
+comm_moll<-as.data.frame(ps_moll@otu_table)
+ses.mpd.result.moll<-ses.mpd(comm_moll,phydist_moll,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+ses.mntd.result.moll<-ses.mntd(comm_moll,phydist_moll,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+```
+
+
+##BY STATION
+```{r phydist_Station, echo = FALSE }
+library(picante)
+
+phydist_arth<-cophenetic(rpt_arth)
+comm_arth_s<-as.data.frame(ps_arth_s@otu_table)
+ses.mntd.result.arth_s<-ses.mntd(comm_arth_s,phydist_arth,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+
+phydist_ann<-cophenetic(rpt_ann)
+comm_ann_s<-as.data.frame(ps_ann_s@otu_table)
+ses.mntd.result.ann_s<-ses.mntd(comm_ann_s,phydist_ann,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+
+phydist_moll<-cophenetic(rpt_moll)
+comm_moll_s<-as.data.frame(ps_moll_s@otu_table)
+ses.mntd.result.moll_s<-ses.mntd(comm_moll_s,phydist_moll,null.model = "taxa.labels", runs=999,abundance.weighted = F)
+
+```
+
+# Plot phylogenetic trees and occurences among Impact Sites
+
+```{r plottrees, echo=FALSE}
+
+plot_tree(ps_arth_s,ladderize=T,color = "Station_ID",justify = "left", title="Arthropoda")+ 
+  scale_color_manual(values=c(rep(c1[2],3),rep(c1[5],1),rep(c1[8],3)))+
+  #geom_point(size=1.5)+
+  #scale_size_manual(values = 0.1)+
+  theme(legend.position = "none")
+
+plot_tree(ps_arth_s,ladderize=T,color = "indtype",shape = "Station_ID",justify = "left", title="Arthropoda", label.tips="Order", text.size = 2) +
+  scale_shape_manual(values=c(rep(1,3),rep(2,1),rep(0,3)))
+
+plot_tree(ps_ann_s,ladderize=T,color = "indtype",shape = "Station_ID",justify = "left", title="Annelida", label.tips="Order", text.size = 2) +
+  scale_shape_manual(values=c(rep(1,3),rep(2,1),rep(0,3)))
+
+plot_tree(ps_ann_s,ladderize=T,color = "Station_ID", justify = "left", title = "Annelida") + 
+  scale_color_manual(values=c(rep(c1[2],3),rep(c1[5],1),rep(c1[8],3)))+
+  theme(legend.position = "none")
+
+plot_tree(ps_moll_s,ladderize=T,color = "Station_ID",justify = "left", title = "Mollusca")+ 
+  scale_color_manual(values=c(rep(c1[2],3),rep(c1[5],1),rep(c1[8],3)))+
+  theme(legend.position = "none")
+
+plot_tree(ps_moll_s,ladderize=T,color = "indtype",shape = "Station_ID",justify = "left", title="Mollusca", label.tips="Order", text.size = 2) +
+  scale_shape_manual(values=c(rep(1,3),rep(2,1),rep(0,3)))
+
+
+```
+
+
+# Create combined MPD, MNTD table to examine patterns of phylogenetic clustering among impact sites
+
+```{r phydist_tab, echo=FALSE, warning=FALSE}
+
+ARMS_ID<-rownames(ses.mntd.result.arth)
+ARMS_ID<-c(ARMS_ID,ARMS_ID,ARMS_ID)
+#pd_phy<-rep(c("Arth","Ann","Moll"),times=c(length(ses.mpd.result.arth$mpd.obs.z)))
+
+Calc_mntd<-rep(c("Arth_mntd","Ann_mntd","Moll_mntd"),times=c(length(ses.mntd.result.arth$mntd.obs.z),length(ses.mntd.result.arth$mntd.obs.z),length(ses.mntd.result.arth$mntd.obs.z)))
+
+#mod<-rep(c("all","all known"),times=c(length(sp1$sites),length(sp2$sites)))
+pd_tab_mntd<-rbind(ses.mntd.result.arth,ses.mntd.result.ann,ses.mntd.result.moll)
+
+rownames(pd_tab_mntd)<-NULL
+pd_tab_mntd<-cbind(ARMS_ID,Calc_mntd,pd_tab_mntd)
+
+pd_tab_mntd<-select(pd_tab_mntd,ARMS_ID,Calc_mntd,mntd.obs.z,mntd.obs.p)
+colnames(pd_tab_mntd)<-c("ARMS_ID","Calc","z","p")
+
+pd_tab<-pd_tab_mntd
+pd_tab$ARMS_ID<-factor(pd_tab$ARMS_ID,levels=c(arms_order_2019))
+
+pd_tab$stars_c <- cut(pd_tab$p, breaks=c(-Inf, 0.001, 0.01, 0.05, Inf), label=c("***", "**", "*", ""))
+pd_tab$stars_e <- cut(pd_tab$p, breaks=c(-Inf, 0.95, 0.99, 0.999, Inf), label=c("", "*", "**", "***"))
+
+#335669,#1F686E,#237968,#45885A,#709349,#A09A3F,#D29C46
+
+ggplot(pd_tab,aes(x=Calc,y=ARMS_ID,fill=z,order=as.factor(ARMS_ID)))+
+  geom_tile()+
+  scale_fill_gradientn(colors=c(H1[2:4],"white",H2[2:4]),limits = c(-5.3,5.3))+ 
+  geom_text(aes(label=stars_c), color="black", size=5,vjust=0.75) +
+  geom_text(aes(label=stars_e), color="white", size=5,vjust=0.75) +
+  labs(x="", y="", fill="z-score")
+
+```
+
+# Create combined MPD, MNTD table to examine patterns of phylogenetic clustering among impact sites
+
+```{r phydist_tab_s, echo=FALSE, warning=FALSE}
+
+Station_ID<-rownames(ses.mntd.result.arth_s)
+Station_ID<-c(Station_ID,Station_ID,Station_ID)
+#pd_phy_s<-rep(c("Arth","Ann","Moll"),times=c(length(ses.mpd.result.arth_s$mpd.obs.z)))
+
+Calc_mntd_s<-rep(c("Arth_mntd","Ann_mntd","Moll_mntd"),times=c(length(ses.mntd.result.arth_s$mntd.obs.z),length(ses.mntd.result.arth_s$mntd.obs.z),length(ses.mntd.result.arth_s$mntd.obs.z)))
+
+pd_tab_mntd_s<-rbind(ses.mntd.result.arth_s,ses.mntd.result.ann_s,ses.mntd.result.moll_s)
+
+rownames(pd_tab_mntd_s)<-NULL
+pd_tab_mntd_s<-cbind(Station_ID,Calc_mntd_s,pd_tab_mntd_s)
+
+pd_tab_mntd_s<-select(pd_tab_mntd_s,Station_ID,Calc_mntd_s,mntd.obs.z,mntd.obs.p)
+colnames(pd_tab_mntd_s)<-c("Station_ID","Calc","z","p")
+
+pd_tab_s<-pd_tab_mntd_s
+pd_tab_s$Station_ID<-factor(pd_tab_s$Station_ID,levels=c('SSW','PC','CI','SW','CDA','BI','TPC'))
+
+pd_tab_s$stars_c <- cut(pd_tab_s$p, breaks=c(-Inf, 0.001, 0.01, 0.05, Inf), label=c("***", "**", "*", ""))
+
+pd_tab_s$stars_e <- cut(pd_tab_s$p, breaks=c(-Inf, 0.95,0.99,0.999,  Inf), label=c("", "*","**","***"))
+
+ggplot(pd_tab_s,aes(x=Calc,y=Station_ID,fill=z,order=as.factor(Station_ID)))+
+  geom_tile()+
+  scale_fill_gradientn(colors=c(H1[2:4],"white",H2[2:4]),limits = c(-5.3,5.3))+ 
+  geom_text(aes(label=stars_c), color="black", size=5,vjust=0.75) +
+  geom_text(aes(label=stars_e), color="white", size=5,vjust=0.75) +
+  labs(x="", y="", fill="z-score")+
+  theme(axis.text.y = element_text(colour =c(rep(c1[2],3),rep(c1[5],1),rep(c1[8],3))))
+
+
+```
+
+
+# Potential supplementary Figures
+
+```{r richness, fig.show="hold", out.width="50%", echo=FALSE}
+
+p_rich_a_pa_2019<-plot_richness(ps_a_pa_2019,x="Station_ID",measures=c("Observed"))
+
+ggplot(data=p_rich_a_pa_2019$data,aes(y=value,x=Station_ID,color=Station_ID))+
+  #geom_violin()+
+  facet_wrap(~Month_Ret)+
+  geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  labs(x="Location",y="OTU Richness")+
+  theme_classic()+
+  theme(legend.position = "none")+
+  #panel_border()+
+  ggtitle("OTU Richness - All OTUs")
+
+p_rich_a_pa_known<-plot_richness(ps_a_pa_known,x="Station_ID",measures=c("Observed"))
+
+ggplot(data=p_rich_a_pa_known$data,aes(y=value,x=Station_ID,color=Station_ID))+
+  #geom_violin()+
+  facet_wrap(~Month_Ret)+
+  geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  #panel_border()+
+  ggtitle("OTU Richness - Assigned OTUs")
+
+
+p_rich_ann_a<-plot_richness(ps_ann_a,x="Station_ID",measures=c("Observed"))
+
+ggplot(data=p_rich_ann_a$data,aes(y=value,x=Station_ID,color=Station_ID))+
+  geom_violin()+
+  #geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  #panel_border()+
+  ggtitle("Annelid OTU Richness")
+
+p_rich_arth_a<-plot_richness(ps_arth_a,x="Station_ID",measures=c("Observed"))
+
+ggplot(data=p_rich_arth_a$data,aes(y=value,x=Station_ID,color=Station_ID))+
+  geom_violin()+
+  #geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  #panel_border()+
+  ggtitle("Arthropod OTU Richness")
+
+p_rich_moll_a<-plot_richness(ps_moll_a,x="Station_ID",measures=c("Observed"))
+
+ggplot(data=p_rich_moll_a$data,aes(y=value,x=Station_ID,color=Station_ID))+
+  geom_violin()+
+  #geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  #panel_border()+
+  ggtitle("Mollusk OTU Richness")
+
+meta_ARMS<-metadata[,c(1,3)]
+
+pd_ann<-pd(ps_ann_a@otu_table,rpt_ann)
+pd_ann$ARMS_ID<-rownames(pd_ann)
+pd_ann<-left_join(pd_ann,meta_ARMS,by="ARMS_ID")
+
+pd_arth<-pd(ps_arth_a@otu_table,rpt_arth)
+pd_arth$ARMS_ID<-rownames(pd_arth)
+pd_arth<-left_join(pd_arth,meta_ARMS,by="ARMS_ID")
+
+pd_moll<-pd(ps_moll_a@otu_table,rpt_moll)
+pd_moll$ARMS_ID<-rownames(pd_moll)
+pd_moll<-left_join(pd_moll,meta_ARMS,by="ARMS_ID")
+
+
+ggplot(data=pd_ann,aes(y=PD,x=Station_ID,color=Station_ID))+
+  geom_violin()+
+  #geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  ggtitle("Annelid Faith's PD")
+
+ggplot(data=pd_arth,aes(y=PD,x=Station_ID,color=Station_ID))+
+  geom_violin()+
+  #geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  ggtitle("Arthropod Faith's PD")
+
+ggplot(data=pd_moll,aes(y=PD,x=Station_ID,color=Station_ID))+
+  geom_violin()+
+  #geom_boxplot(width=0.1)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c('SSW','PC','CI','SW','CDA','BI','TPC'))+
+  geom_dotplot(binaxis='y', stackdir='center', position = position_dodge(1), dotsize = 0.5)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Location",y="OTU Richness")+
+  ggtitle("Mollusk Faith's PD")
+
+```
+
+
+
+##Rarefaction Curves
+
+```{r rarefactions, echo=FALSE}
+rare_res_frac_200<- get_rarecurve(obj=ps_2019, chunks=200)
+rareres <- get_rarecurve(obj=ps_a_2019, chunks=400)
+#rareres_test <- get_rarecurve(obj=ps_i_pa_known, chunks=100)
+
+p_rare <- ggrarecurve(obj=rare_res_frac_200,
+                      indexNames=c("Observe","Chao1","ACE"),
+                      ) +
+          scale_color_manual(aes(colour=Size_Fraction),values=c("red","blue","green"))+
+          theme(legend.spacing.y=unit(0.01,"cm"),
+                legend.text=element_text(size=4))
+
+prare1<- ggrarecurve(obj=rareres,
+                      indexNames=c("Observe", "Chao1", "ACE")
+                      ) +
+          scale_fill_manual(limits=arms_order_2019, values=arms_by_site_col)+
+          scale_color_manual(limits=arms_order_2019, values=arms_by_site_col)+
+          theme_bw()+
+          theme(axis.text=element_text(size=8), panel.grid=element_blank(),
+                strip.background = element_rect(colour=NA,fill="grey"),
+                strip.text.x = element_text(face="bold"))  
+
+prare2<- ggrarecurve(obj=rareres, factorNames="Station_ID",
+                      indexNames=c("Observe", "Chao1", "ACE")
+                      ) +
+          scale_fill_manual(limits=site_order_2019,values=site_colors)+
+          scale_color_manual(limits=site_order_2019,values=site_colors)+
+          theme_bw()+
+          theme(axis.text=element_text(size=8), panel.grid=element_blank(),
+                strip.background = element_rect(colour=NA,fill="grey"),
+                strip.text.x = element_text(face="bold"))          
+
+p_rare
+prare1
+prare2
+     
+
+
+```
+
+
+
+```{r venn, echo=FALSE, eval=FALSE}
+library(MicrobiotaProcess)
+library(ggvenn)
+vennlist_known <- get_vennlist(obj=ps_s_pa_known, factorNames="Station_ID")
+vennlist_impact<-get_vennlist(obj=ps_s_pa_known, factorNames="Impact")
+vennlist_HvL<-get_vennlist(obj=HvL, factorNames="Impact")
+
+ggvenn(vennlist_HvL,auto_scale=TRUE)
+```
+
+
+
+```{r prevplots, echo=FALSE, message=FALSE}
+prev0_ps_a_2019 = apply(X = otu_table(ps_a_2019),
+              MARGIN = ifelse(taxa_are_rows(ps_a_2019), yes = 1, no = 2),
+              FUN = function(x){sum(x > 0)})
+prevdf_ps_a_2019 = data.frame(Prevalence = prev0_ps_a_2019,
+                    TotalAbundance = taxa_sums(ps_a_2019),
+                    tax_table(ps_a_2019))
+keepPhyla_ps_a_2019 = table(prevdf_ps_a_2019$Phylum)[(table(prevdf_ps_a_2019$Phylum) > 1)]
+prevdf1_ps_a_2019 = subset(prevdf_ps_a_2019, Phylum %in% names(keepPhyla_ps_a_2019))
+# Define prevalence thlreshold as 5% of total samples
+prevalenceThreshold_ps_a_2019 = 0.05 * nsamples(ps_a_2019)
+
+prevdf1_ps_a_2019$Phylum<-factor(prevdf1_ps_a_2019$Phylum, levels=c(Phy_order_2019))
+ggplot(prevdf1_ps_a_2019,aes(Prevalence, TotalAbundance, color=Phylum))+
+  geom_point() +
+  scale_color_manual(values=y35)+
+  geom_hline(yintercept = prevalenceThreshold_ps_a_2019, alpha = 0.5, linetype = 2) +
+  geom_point(size = 1, alpha = 0.7) +
+  #scale_x_discrete(limits=c(arms_order_all),)+
+  scale_y_log10() + #scale_x_log10() +
+  xlab("Total Number of ARMS") +
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))+
+  ggtitle("All")
+
+
+```
+  
+```{r part_Bdiv, echo=FALSE, message=FALSE} 
+library(adespatial)
+library(ggtern)
+PAR<-beta.div.comp(ps_s_pa_known@otu_table,coef = "J", quant=F,save.abc = T)
+
+s_replace<-as.matrix(PAR$repl)
+s_richness<-as.matrix(PAR$rich)
+s_jaccard<-as.matrix(PAR$D)
+s_betasum<-as.matrix(PAR$part)
+
+s_replace[upper.tri(s_replace)]<-NA
+diag(s_replace)<-NA
+s_richness[upper.tri(s_richness)]<-NA
+diag(s_richness)<-NA
+s_jaccard[upper.tri(s_jaccard)]<-NA
+diag(s_jaccard)<-NA
+s_jaccard_d<-1-(s_jaccard)
+
+S_replace<-c(s_replace[,1:7])
+S_richness<-c(s_richness[,1:7])
+S_jaccard_d<-c(s_jaccard_d[,1:7])
+
+SITE_tern<-cbind(S_replace,S_richness,S_jaccard_d)
+SITE_tern<-drop_na(as.data.frame(SITE_tern))
+
+ggtern(data = SITE_tern,aes(x = S_richness, y = S_replace, z = S_jaccard_d)) + 
+  theme_bw() +
+  geom_point() +
+  theme_showarrows() +
+  theme_hidetitles() +
+  xlab("Richness Difference")+
+  ylab("Replacement")+
+  zlab("Jaccard Similarity")+
+  labs(title = "Comparisons by Site")
+
+
+
+```
+
+     
+     
+```{r upset_build_side, echo=FALSE, message=FALSE}     
+    
+
+##OTUs unique to 1 site only
+ps_sitespecific<-prune_taxa(taxa_sums(ps_s_pa_known)<2,ps_s_pa_known)
+
+Phyfac_2019_known = factor(phyloseq::tax_table(ps_sitespecific)[, "Phylum"])
+# Tabulate the counts for each phylum in each sample
+OTUtab_s_unique_2019_known = apply(otu_table(ps_sitespecific), MARGIN = 1, function(x) {
+    tapply(x, INDEX = Phyfac_2019_known, FUN = sum, na.rm = F, simplify = TRUE)
+})
+OTUtab_s_unique_2019_known<-as.data.frame(as.table(OTUtab_s_unique_2019_known))
+OTUtab_s_unique_2019_known$Var1<-factor(OTUtab_s_unique_2019_known$Var1,levels=c(Phy_order_2019))
+
+ggplot(OTUtab_s_unique_2019_known)+
+  geom_col(aes(x=Var2,y=Freq,fill=Var1,order=as.factor(Var1)))+
+  scale_x_discrete(limits=c('SSW','PC','CI','SW','CDA','BI','TPC'),)+
+  #panel_border() +
+  scale_fill_manual(values=y32)+
+  scale_y_continuous(expand=expansion(c(0,0.22))) +
+  theme_classic()+
+  ylab("Number of Unique OTUs per Phylum")+
+  xlab("Location")+
+  ggtitle("OTUs unique to 1 site")+
+  labs(fill = "Phylum")

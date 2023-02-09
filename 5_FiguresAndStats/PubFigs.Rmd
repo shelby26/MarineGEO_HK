@@ -99,12 +99,6 @@ COI_taxa1<-rbind(mc,lca_uni)
 COI_taxa1<-COI_taxa1 %>% mutate_all(na_if,"")
 COI_taxa1<-select(COI_taxa1,-X)
 
-##figuring out how to mark indicator species from later
-Seq<-c(lowlist,highlist)
-indtype<-c(rep("low",length(lowlist)),rep("high",length(highlist)))
-ind.df<-as.data.frame(cbind(Seq,indtype))
-COI_taxa1<-full_join(COI_taxa1,ind.df,by="Seq")
-
 ##Include this to keep Unknown seqs##
 uk_u<-setdiff(COI_taxa_wUnK$Seq,COI_taxa1$Seq)
 uk_uni<-filter(COI_taxa_wUnK,Seq %in% uk_u)
@@ -173,22 +167,12 @@ ps <- subset_samples(ps, Ret_ID != "control")
 ps <- prune_taxa(taxa_sums(ps)>0,ps) #gets rid of everything only found in controls
 
 
-#ps %>%
-#      refseq() %>%
-#      Biostrings::writeXStringSet("~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working/COI_Final_working/ps_asv.fasta", append=FALSE, compress=FALSE, compression_level=NA, format="fasta")
-
 ```
 
 # Merge size fractions for individual ARMS level analysis
 
 ```{r phyloseq2, include=FALSE}
 
-#ps_2017<-subset_samples(ps, Month_Ret =="OCT")
-#ps_2017<- prune_taxa(taxa_sums(ps_2017)>0,ps_2017)
-
-#write.csv(ps_2017@otu_table,file="OTUtab_2017.csv")
-#write.csv(ps_2017@tax_table ,file="TAXtab_2017.csv")
-#write.csv(ps_2017@sam_data ,file="SAMtab_2017.csv")
 
 ps_a<-merge_samples(ps,"ARMS_ID") #merge the size fractions into ARMS
 sample_data(ps_a)$Ret_ID <- levels(sample_data(ps)$Ret_ID)[get_variable(ps_a, "Ret_ID")]
@@ -201,12 +185,14 @@ sample_data(ps_a)$Impact <- levels(sample_data(ps)$Impact)[get_variable(ps_a, "I
 ps_a_pa<-ps_a
 ps_a_pa@otu_table[1:53,][ps_a_pa@otu_table[1:53,]>0]<-1 
 
-ps_a_2019<-subset_samples(ps_a, Month_Ret !="OCT")
+##There is an additional data set in this run from OCT 2017 that needs to be removed
+ps_a_2019<-subset_samples(ps_a, Month_Ret !="OCT") 
 ps_a_2019<- prune_taxa(taxa_sums(ps_a_2019)>0,ps_a_2019)
 
 ps_a_pa_2019<-subset_samples(ps_a_pa, Month_Ret !="OCT")
 ps_a_pa_2019<- prune_taxa(taxa_sums(ps_a_pa_2019)>0,ps_a_pa_2019)
 
+##For analysis of taxonomically assigned OTUs only
 ps_a_known<-subset_taxa(ps_a_2019, Phylum !="Unassigned")
 ps_a_known<- prune_taxa(taxa_sums(ps_a_known)>0,ps_a_known)
 
@@ -302,13 +288,6 @@ ggplot(sac,aes(x=sites,y=rich,color=mod))+
   theme(panel.border = element_rect(colour = "black", fill=NA, size=0.6),legend.title = element_blank())+
   ylab("OTU Richness")+
   xlab("Number of ARMS")
-
-
-#ps_a_known_H<-subset_samples(ps_a_known,Impact=="High")
-#sp_H<-specaccum((otu_table(ps_a_known_H)),subset = TRUE, method='exact',permutations = 500)
-#plot(sp_H,ci.type="poly", col="blue", lwd=2, ci.lty=0, ci.col="lightblue")
-#ps_a_known_L<-subset_samples(ps_a_known,Impact=="Low")
-#sp_L<-specaccum((otu_table(ps_a_known_L)),subset = TRUE, method='exact',permutations = 500)
 
 ps_a_known_H<-subset_samples(ps_a_2019,Impact=="High")
 ps_a_known_H<- prune_taxa(taxa_sums(ps_a_known_H)>0,ps_a_known_H)
@@ -457,7 +436,6 @@ leveneTest(p_rich4$data$value,p_rich4$data$Ret_ID)
 ```
 
 
-
 # PCoAs
 
 ```{r PCoAs, echo=FALSE, message=FALSE, results='hide',fig.show="hold", out.width="50%"}
@@ -541,7 +519,7 @@ ggplot(s_hist_k,aes(x=s_hist_k))+
 
 # Look further into patterns withing Phyla including Arthropoda, Annelida, and Mollusca.
 
-# Import phylogenetic trees made for individual phyla within qiime2. (at final analysis may need to make these again, could be a few more identified sequences from updated taxa files)
+# Import phylogenetic trees made for individual phyla within qiime2.
 
 ```{r importtrees, echo = FALSE }
 
@@ -585,17 +563,14 @@ ps_moll_s@sam_data$Station_ID<-factor(ps_moll_s@sam_data$Station_ID, levels=c("S
 library(picante)
 phydist_arth<-cophenetic(rpt_arth)
 comm_arth<-as.data.frame(ps_arth@otu_table)
-ses.mpd.result.arth<-ses.mpd(comm_arth,phydist_arth,null.model = "taxa.labels", runs=999,abundance.weighted = F)
 ses.mntd.result.arth<-ses.mntd(comm_arth,phydist_arth,null.model = "taxa.labels", runs=999,abundance.weighted = F)
 
 phydist_ann<-cophenetic(rpt_ann)
 comm_ann<-as.data.frame(ps_ann@otu_table)
-ses.mpd.result.ann<-ses.mpd(comm_ann,phydist_ann,null.model = "taxa.labels", runs=999,abundance.weighted = F)
 ses.mntd.result.ann<-ses.mntd(comm_ann,phydist_ann,null.model = "taxa.labels", runs=999,abundance.weighted = F)
 
 phydist_moll<-cophenetic(rpt_moll)
 comm_moll<-as.data.frame(ps_moll@otu_table)
-ses.mpd.result.moll<-ses.mpd(comm_moll,phydist_moll,null.model = "taxa.labels", runs=999,abundance.weighted = F)
 ses.mntd.result.moll<-ses.mntd(comm_moll,phydist_moll,null.model = "taxa.labels", runs=999,abundance.weighted = F)
 ```
 
@@ -624,8 +599,6 @@ ses.mntd.result.moll_s<-ses.mntd(comm_moll_s,phydist_moll,null.model = "taxa.lab
 
 plot_tree(ps_arth_s,ladderize=T,color = "Station_ID",justify = "left", title="Arthropoda")+ 
   scale_color_manual(values=c(rep(c1[2],3),rep(c1[5],1),rep(c1[8],3)))+
-  #geom_point(size=1.5)+
-  #scale_size_manual(values = 0.1)+
   theme(legend.position = "none")
 
 plot_tree(ps_arth_s,ladderize=T,color = "indtype",shape = "Station_ID",justify = "left", title="Arthropoda", label.tips="Order", text.size = 2) +
@@ -649,7 +622,7 @@ plot_tree(ps_moll_s,ladderize=T,color = "indtype",shape = "Station_ID",justify =
 ```
 
 
-# Create combined MPD, MNTD table to examine patterns of phylogenetic clustering among impact sites
+# Create combined MNTD table to examine patterns of phylogenetic clustering among ARMS impact sites
 
 ```{r phydist_tab, echo=FALSE, warning=FALSE}
 
@@ -659,7 +632,6 @@ ARMS_ID<-c(ARMS_ID,ARMS_ID,ARMS_ID)
 
 Calc_mntd<-rep(c("Arth_mntd","Ann_mntd","Moll_mntd"),times=c(length(ses.mntd.result.arth$mntd.obs.z),length(ses.mntd.result.arth$mntd.obs.z),length(ses.mntd.result.arth$mntd.obs.z)))
 
-#mod<-rep(c("all","all known"),times=c(length(sp1$sites),length(sp2$sites)))
 pd_tab_mntd<-rbind(ses.mntd.result.arth,ses.mntd.result.ann,ses.mntd.result.moll)
 
 rownames(pd_tab_mntd)<-NULL
@@ -685,7 +657,7 @@ ggplot(pd_tab,aes(x=Calc,y=ARMS_ID,fill=z,order=as.factor(ARMS_ID)))+
 
 ```
 
-# Create combined MPD, MNTD table to examine patterns of phylogenetic clustering among impact sites
+# Create MNTD table to examine patterns of phylogenetic clustering among impact sites
 
 ```{r phydist_tab_s, echo=FALSE, warning=FALSE}
 
@@ -718,9 +690,7 @@ ggplot(pd_tab_s,aes(x=Calc,y=Station_ID,fill=z,order=as.factor(Station_ID)))+
   labs(x="", y="", fill="z-score")+
   theme(axis.text.y = element_text(colour =c(rep(c1[2],3),rep(c1[5],1),rep(c1[8],3))))
 
-
 ```
-
 
 # Potential supplementary Figures
 
@@ -841,8 +811,6 @@ ggplot(data=pd_moll,aes(y=PD,x=Station_ID,color=Station_ID))+
 
 ```
 
-
-
 ##Rarefaction Curves
 
 ```{r rarefactions, echo=FALSE}
@@ -881,10 +849,7 @@ p_rare
 prare1
 prare2
      
-
-
 ```
-
 
 
 ```{r venn, echo=FALSE, eval=FALSE}
@@ -924,9 +889,9 @@ ggplot(prevdf1_ps_a_2019,aes(Prevalence, TotalAbundance, color=Phylum))+
   theme(panel.border = element_rect(colour = "black", fill=NA, size=1))+
   ggtitle("All")
 
-
 ```
-  
+
+
 ```{r part_Bdiv, echo=FALSE, message=FALSE} 
 library(adespatial)
 library(ggtern)
@@ -962,15 +927,11 @@ ggtern(data = SITE_tern,aes(x = S_richness, y = S_replace, z = S_jaccard_d)) +
   zlab("Jaccard Similarity")+
   labs(title = "Comparisons by Site")
 
-
-
 ```
 
      
-     
 ```{r upset_build_side, echo=FALSE, message=FALSE}     
     
-
 ##OTUs unique to 1 site only
 ps_sitespecific<-prune_taxa(taxa_sums(ps_s_pa_known)<2,ps_s_pa_known)
 
@@ -993,3 +954,4 @@ ggplot(OTUtab_s_unique_2019_known)+
   xlab("Location")+
   ggtitle("OTUs unique to 1 site")+
   labs(fill = "Phylum")
+```

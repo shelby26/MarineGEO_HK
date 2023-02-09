@@ -4,16 +4,16 @@ MarineGEO_HK working analyses
 
 
 Multistep data processing included:
-0_Raw sequence data
+0_Raw sequence data are availible on figshare at doi: ####
 
 1_RemoveAdaptors - use cutadapt in commandline to gunzip and trim F/R adapters
 
-2_dada2_quality control, filtering and chimera removal
+2_FilterAndTrim - use dada2 for quality control, filtering and chimera removal
 
-3_MACSE_protein translation and non-sense removal
+3_AATranslation - use MACSE for alignment and protein translation and to remove seqs with nonsense AA
 
-4_Database formatting
+4_AssignTaxonomy - Use Qiime2 for identity clustering and taxonomic assignments. Need a formatted database
 
-5_Qiime2 for identity clustering and taxonomic assignments
+5_FiguresAndStats - use R to look for data analysis importing ASV table and taxa tables. Run stats and make coarse figures
 
-6_R for data analysis and tables and coarse figures
+data - ASV and taxa tables.

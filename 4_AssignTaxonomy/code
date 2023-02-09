@@ -1,0 +1,120 @@
+#### QIIME ANALYSIS
+##
+##			 **** START HERE ONCE YOU HAVE A GOOD DATABASE *****
+##
+
+
+qiime tools import \
+  --type 'FeatureData[Sequence]' \
+  --input-path CoA_HK_CM_Qiime.fasta \
+  --output-path CoA_HK_CM_Qiime_seq.qza
+
+qiime tools import \
+  --type 'FeatureData[Taxonomy]' \
+  --input-format HeaderlessTSVTaxonomyFormat \
+  --input-path CoA_HK_CM_Qiime.taxa \
+  --output-path CoA_HK_CM_Qiime_taxa.qza
+
+qiime tools import \
+	--input-path otu_biom1.biom \
+	--type 'FeatureTable[Frequency]' \
+	--input-format BIOMV100Format \
+	--output-path ARMS_feature_table.qza
+
+qiime tools import \
+  --input-path ASVs_cleanIDs.fasta \
+  --type 'FeatureData[Sequence]' \
+  --output-path rep-seqs.qza
+
+#clustering of ASVs into OTUs at 97% - this differs among genes
+qiime vsearch cluster-features-de-novo \
+  --i-table ARMS_feature_table.qza \
+  --i-sequences rep-seqs.qza \
+  --p-perc-identity 0.97 \
+  --o-clustered-table table-dn-97.qza \
+  --o-clustered-sequences rep-seqs-dn-97.qza
+
+##vsearch is slow but is exhaustive (heuristic searches are sensitive to overrepresented taxa in your database.) COI database too many insects!
+##Best match with a threshold of 80% - only trust this ID to Phylum level
+qiime feature-classifier classify-consensus-vsearch \
+--i-query rep-seqs-dn-97.qza \
+--i-reference-reads CoA_HK_CM_Qiime_seq.qza \
+--i-reference-taxonomy CoA_HK_CM_Qiime_taxa.qza \
+--p-maxaccepts 2 \
+--p-perc-identity 0.8 \
+--p-strand plus \
+--p-threads 20 \
+--o-classification HKCOI-taxonomy_80match.qza
+
+##vsearch is slow but is exhaustive (heuristic searches are sensitive to overrepresented taxa in your database.) COI database too many insects!
+##Best match with a threshold of 95% - pretty good species level confidence for COI
+qiime feature-classifier classify-consensus-vsearch \
+--i-query rep-seqs-dn-97.qza \
+--i-reference-reads CoA_HK_CM_Qiime_seq.qza \
+--i-reference-taxonomy CoA_HK_CM_Qiime_taxa.qza \
+--p-maxaccepts 2 \
+--p-perc-identity 0.95 \
+--p-strand plus \
+--p-threads 20 \
+--o-classification HKCOI-taxonomy_95match.qza
+
+
+
+##Make Phylum specific trees - This was used for MarineGEO COI to rerun alignments and tress for individual phyla
+##bring above data into R, subset phyla with phyloseq and bring back sequence fasta files below.
+
+qiime tools import \
+  --type 'FeatureData[Sequence]' \
+  --input-path ann.fasta \
+  --output-path ann.qza
+
+qiime tools import \
+  --type 'FeatureData[Sequence]' \
+  --input-path arth.fasta \
+  --output-path arth.qza
+  
+qiime tools import \
+  --type 'FeatureData[Sequence]' \
+  --input-path moll.fasta \
+  --output-path moll.qza
+  
+qiime alignment mafft \
+  --i-sequences ann.qza \
+  --o-alignment aligned-ann.qza
+
+qiime alignment mafft \
+  --i-sequences arth.qza \
+  --o-alignment aligned-arth.qza
+  
+qiime alignment mafft \
+  --i-sequences moll.qza \
+  --o-alignment aligned-moll.qza
+ 
+qiime phylogeny iqtree \
+  --i-alignment aligned-ann.qza \
+  --o-tree ann-unroot-tree.qza \
+  --verbose
+ 
+ qiime phylogeny midpoint-root \
+  --i-tree ann-unroot-tree.qza \
+  --o-rooted-tree ann-root-tree.qza
+ 
+qiime phylogeny iqtree \
+  --i-alignment aligned-arth.qza \
+  --o-tree arth-unroot-tree.qza \
+  --verbose
+ 
+ qiime phylogeny midpoint-root \
+  --i-tree arth-unroot-tree.qza \
+  --o-rooted-tree arth-root-tree.qza
+ 
+ qiime phylogeny iqtree \
+  --i-alignment aligned-moll.qza \
+  --o-tree moll-unroot-tree.qza \
+  --verbose
+ 
+ qiime phylogeny midpoint-root \
+  --i-tree moll-unroot-tree.qza \
+  --o-rooted-tree moll-root-tree.qza
+  
+  

@@ -15,6 +15,8 @@ library(tidyr)
 library(MicrobiotaProcess)
 library(cowplot)
 
+##Most of the necessary libraries from the list below are loaded within the chunk they are used, but I'm too afraid to take them away from here yet. 
+
 #library(decontam)
 #library(ggplot2)
 #library(tm)
@@ -36,9 +38,7 @@ library(cowplot)
 #library(ggvenn)
 
 
-knitr::opts_knit$set(root.dir = '~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working')
-#setwd("~/Desktop/HKU/Projects/MarineGEO/Bioinformatics/COI_ALL_Final_working")
-
+knitr::opts_knit$set(root.dir =  ##Set your directory here.
 
 ```
 

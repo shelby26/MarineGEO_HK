@@ -54,7 +54,7 @@ plotQualityProfile(fnFs, aggregate = TRUE) + ggtitle("Forward")
 dev.off()
 
 pdf("qprofile_rev.pdf")
-print(plotQualityProfile(fnRs, aggregate = TRUE) + ggtitle("Reverse")
+plotQualityProfile(fnRs, aggregate = TRUE) + ggtitle("Reverse")
 dev.off()
 
 
@@ -200,13 +200,4 @@ seqtab2.nochim.renamed[, 1:66] <- sapply(seqtab2.nochim.renamed[, 1:66], as.nume
 
 write.csv(seqtab2.nochim.renamed,file="/data/MarineGEO/adtrim/OutputDADA_ASVtable.csv",quote=F)
 
-"^\;([^\;]+)\;"
-
-"^(\\;+)\\;?"
-"^(\\S+)\\s?"
-"^gi\|([^\|]+)\|"
-
-"^([^;]+)\;"
-
-##For R in terminal
 save.image(file='COIALL_dada2complete.RData')

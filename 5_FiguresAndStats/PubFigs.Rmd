@@ -259,36 +259,11 @@ arms_by_site_col<-c(rep(site_colors[1],6),rep(site_colors[2],6),rep(site_colors[
 ycol<-c(rep(c1[1],18),rep(c1[5],5),rep(c1[9],18))
 ```
 
-# Plot species accumulation curves
+# Plot species accumulation curves for HK Data - All, high impact, low impact
 
 ```{r spec, echo=FALSE, warning=FALSE}
+
 sp1<-specaccum((otu_table(ps_a_2019)),subset = TRUE, method='exact',permutations = 500)
-#mod1 <- fitspecaccum(sp1, "lomolino")
-
-sp2<-specaccum((otu_table(ps_a_known)),subset = TRUE, method='exact',permutations = 500)
-#mod2 <- fitspecaccum(sp2, "lomolino")
-
-mod<-rep(c("all","all known"),times=c(length(sp1$sites),length(sp2$sites)))
-sites<-c(sp1$sites,sp2$sites)
-rich<-c(sp1$rich,sp2$rich)
-sd<-c(sp1$sd,sp2$sd)
-
-sac<-cbind(mod,sites,rich,sd)
-sac<-as.data.frame(sac)
-sac$sites<-as.numeric(sac$sites)
-sac$rich<-as.numeric(sac$rich)
-sac$sd<-as.numeric(sac$sd)
-
-ggplot(sac,aes(x=sites,y=rich,color=mod))+
-  geom_line()+
-  geom_point(size=1)+
-  geom_linerange(aes(ymin=rich-sd, ymax=rich+sd))+
-  scale_color_manual(values=c("grey","black"),labels=c("All OTUs","Phylum Assigned OTUs"),limits=c("all", "all known"))+
-  theme_classic()+
-  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.6),legend.title = element_blank())+
-  ylab("OTU Richness")+
-  xlab("Number of ARMS")
-
 ps_a_known_H<-subset_samples(ps_a_2019,Impact=="High")
 ps_a_known_H<- prune_taxa(taxa_sums(ps_a_known_H)>0,ps_a_known_H)
 sp_H<-specaccum((otu_table(ps_a_known_H)),subset = TRUE, method='exact',permutations = 500)
@@ -297,10 +272,11 @@ ps_a_known_L<-subset_samples(ps_a_2019,Impact=="Low")
 ps_a_known_L<- prune_taxa(taxa_sums(ps_a_known_L)>0,ps_a_known_L)
 sp_L<-specaccum((otu_table(ps_a_known_L)),subset = TRUE, method='exact',permutations = 500)
 
-mod_i<-rep(c("high","low"),times=c(length(sp_H$sites),length(sp_L$sites)))
-sites_i<-c(sp_H$sites,sp_L$sites)
-rich_i<-c(sp_H$rich,sp_L$rich)
-sd_i<-c(sp_H$sd,sp_L$sd)
+
+mod_i<-rep(c("all","high","low"),times=c(length(sp1$sites),length(sp_H$sites),length(sp_L$sites)))
+sites_i<-c(sp1$sites,sp_H$sites,sp_L$sites)
+rich_i<-c(sp1$rich,sp_H$rich,sp_L$rich)
+sd_i<-c(sp1$sd,sp_H$sd,sp_L$sd)
 
 sac_i<-cbind(mod_i,sites_i,rich_i,sd_i)
 sac_i<-as.data.frame(sac_i)
@@ -320,6 +296,9 @@ ggplot(sac_i,aes(x=sites_i,y=rich_i,color=mod_i))+
 
 ```
 
+# Plot Species accumulation curves including HK data as well as extracted data from other regions (Figure 2)
+
+
 ```{r geospec, echo=FALSE, warning=FALSE}
 geoSac<-read.csv(file="COI_GeoARMS.csv",header=TRUE)
 
@@ -338,32 +317,8 @@ ggplot(data=geoSac,aes(x=sites,y=rich,color=mod))+
 
 
 
+# Plot OTU Richness by phylum (Figure 3a and 3b)
 
-```{r OTUtables, include=FALSE}
-
-#2019 by station ALL
-Phyfac_2019 = factor(tax_table(ps_s_pa_2019)[, "Phylum"])
-# Tabulate the counts for each genera in each sample
-OTUtab_s_unique_2019 = apply(otu_table(ps_s_pa_2019), MARGIN = 1, function(x) {
-    tapply(x, INDEX = Phyfac_2019, FUN = sum, na.rm = F, simplify = TRUE)
-})
-
-OTUtab_s_unique_2019_chi<-subset(OTUtab_s_unique_2019,rowSums(OTUtab_s_unique_2019)>40)
-
-knitr::kable(OTUtab_s_unique_2019_chi,caption="Unique OTUs per Phylum")
-
-#OTUtab_s_unique_2019<-subset(OTUtab_s_unique_2019,rowSums(OTUtab_s_unique_2019)>30)
-Phy.chisq<-chisq.test(OTUtab_s_unique_2019_chi)
-Phy.chisq.posthoc<-chisq.posthoc.test(OTUtab_s_unique_2019_chi,method = "bonferroni")
-
-Phy.chisq$expected
-Phy.chisq.posthoc
-
-knitr::kable(Phy.chisq.posthoc,caption="Post-hoc comparisons of Phyla")
-
-```
-
-# Plot OTU Richness by phylum
 
 ```{r plot_by_phy_2019, fig.show="hold", out.width="50%", echo=FALSE, warning=FALSE}
 
@@ -417,23 +372,33 @@ ggplot(OTUtab_s_unique_2019_known)+
 # Statistical Comparison of species richness in High Impact (SSW, PC, CI) and Low Impact (CDA, BI, TPC). SW, as the only "medium" impact site was not included in the analysis. Season (Ret_ID) was also tested. (1) results including all data, (2) results of known phyla only 
 
 ```{r diversity_stats, echo=FALSE}
-library(car)
 
-HvL_all<-subset_samples(ps_a_pa_2019, Station_ID!="SW")
-p_rich5<-plot_richness(HvL_all,x="Station_ID",color="Station_ID",measures=c("Observed"))
-summary(aov(p_rich5$data$value~p_rich5$data$Impact*p_rich5$data$Month_Ret))
+library(nlme)
 
-shapiro.test(p_rich5$data$value)
-leveneTest(p_rich5$data$value,p_rich5$data$Ret_ID)
+HvL_a<-subset_samples(ps_a_pa_2019, Station_ID!="SW")
+p_rich_ahl<-plot_richness(HvL_a,x="Station_ID",color="Station_ID",measures=c("Observed"))
+rich1_a<-cbind(p_rich_ahl$data$value,p_rich_ahl$data$Impact,p_rich_ahl$data$Month_Ret,p_rich_ahl$data$Station_ID,p_rich_ahl$data$ARMS_ID)
+rich1_a<-as.data.frame(rich1_a)
+colnames(rich1_a)<-c("value","Impact","Month_Ret","Station_ID","ARMS_ID")
+rich1_a$value<-as.numeric(rich1_a$value)
 
-HvL<-subset_samples(ps_a_pa_known, Station_ID!="SW")
-p_rich4<-plot_richness(HvL,x="Station_ID",color="Station_ID",measures=c("Observed"))
-summary(aov(p_rich4$data$value~p_rich4$data$Impact*p_rich4$data$Month_Ret))
+m1_all <- lme(value~Impact,random=~1|Station_ID/ARMS_ID,data=rich1_a)
+summary(m1_all)
 
-shapiro.test(p_rich4$data$value)
-leveneTest(p_rich4$data$value,p_rich4$data$Ret_ID)
+
+HvL_k<-subset_samples(ps_a_pa_known, Station_ID!="SW")
+p_rich_khl<-plot_richness(HvL_k,x="Station_ID",color="Station_ID",measures=c("Observed"))
+rich1_k<-cbind(p_rich_khl$data$value,p_rich_khl$data$Impact,p_rich_khl$data$Month_Ret,p_rich_khl$data$Station_ID,p_rich_khl$data$ARMS_ID)
+rich1_k<-as.data.frame(rich1_k)
+colnames(rich1_k)<-c("value","Impact","Month_Ret","Station_ID","ARMS_ID")
+rich1_k$value<-as.numeric(rich1_k$value)
+
+m1_known <- lme(value~Impact,random=~1|Station_ID/ARMS_ID,data=rich1_k)
+summary(m1_known)
+
 
 ```
+
 
 
 # PCoAs

@@ -1,0 +1,241 @@
+﻿Water_Control_Zone,Station,Site,Site_ID,Dates,Sample_No,Depth,Season,Binning,Volatile_Suspended_Solids,Turbidity,Total_Nitrogen,Total_Kjeldahl_Nitrogen,Total_Inorganic_Nitrogen,Salinity,Phaeo-pigments,Orthophosphate_Phosphorus,Faecal_Coliforms,Dissolved_Oxygen_mgL,Ammonia_Nitrogen,5-day_Biochemical_Oxygen_Demand
+Port Shelter,PM11,Bluff Island,BI,17/5/2018,1,Surface Water,summer,low,0.5,0.1,0.27,0.27,0.03,33.5,0,0,0,6.4,0.026,0.3
+Port Shelter,PM9,Bluff Island,BI,17/5/2018,1,Middle Water,summer,low,0.6,0.2,0.26,0.26,0.02,33.8,0,0,0,6.5,0.016,0.3
+Port Shelter,PM11,Bluff Island,BI,14/6/2018,1,Surface Water,summer,low,1,1.2,0.35,0.31,0.06,29.9,0.4,0,40,6.1,0.018,0.6
+Port Shelter,PM9,Bluff Island,BI,14/6/2018,1,Middle Water,summer,low,0.7,1,0.89,0.86,0.05,30.8,1.3,0.007,13,4.8,0.024,0.3
+Port Shelter,PM11,Bluff Island,BI,13/7/2018,1,Surface Water,summer,low,0.8,2.4,0.91,0.9,0.02,31.3,0.9,0.008,0,6.1,0.017,1.2
+Port Shelter,PM9,Bluff Island,BI,13/7/2018,1,Middle Water,summer,low,1.1,0.7,0.73,0.73,0.03,31.3,0,0.008,0,6.3,0.024,0.7
+Port Shelter,PM11,Bluff Island,BI,20/8/2018,1,Surface Water,summer,low,0.7,2.8,0.12,0.09,0.05,30.8,0.8,0.007,0,6,0.023,0.5
+Port Shelter,PM9,Bluff Island,BI,20/8/2018,1,Middle Water,summer,low,0.6,0.3,0.2,0.08,0.13,31.9,0.4,0.017,0,4.7,0.009,0.2
+Port Shelter,PM11,Bluff Island,BI,24/9/2018,1,Surface Water,summer,low,0.8,0.3,0.2,0.2,0.01,30.3,1.6,0.005,0,7.9,0.008,0.7
+Port Shelter,PM9,Bluff Island,BI,24/9/2018,1,Middle Water,summer,low,0.6,0.4,0.48,0.44,0.06,32.2,1.2,0.012,0,7.2,0.018,0.6
+Port Shelter,PM11,Bluff Island,BI,11/10/2018,1,Surface Water,autumn,low,0.5,0.3,0.12,0.11,0.02,32.5,0.6,0.008,1,6,0.017,0.2
+Port Shelter,PM9,Bluff Island,BI,11/10/2018,1,Middle Water,autumn,low,0.7,0.8,0.17,0.16,0.05,32.4,0.5,0.009,1,5.4,0.035,0.3
+Port Shelter,PM11,Bluff Island,BI,3/5/2019,1,Surface Water,summer,low,2,0.1,0.24,0.19,0.06,32.3,1.2,0.007,0,5.6,0.014,0.7
+Port Shelter,PM9,Bluff Island,BI,3/5/2019,1,Middle Water,summer,low,1.2,0.2,0.29,0.25,0.06,32.1,0,0.008,0,5.3,0.016,0.4
+Port Shelter,PM11,Bluff Island,BI,26/6/2019,1,Surface Water,summer,low,0.8,0.5,0.32,0.29,0.04,30.8,0,0,3,5.9,0.016,0.8
+Port Shelter,PM9,Bluff Island,BI,26/6/2019,1,Middle Water,summer,low,0,0.4,0.19,0.18,0.02,31.7,0,0,0,4.7,0.006,0.7
+Port Shelter,PM11,Bluff Island,BI,4/7/2019,1,Surface Water,summer,low,1.1,6.2,0.54,0.41,0.14,21.5,2.2,0.002,6,5.5,0.014,1.5
+Port Shelter,PM9,Bluff Island,BI,4/7/2019,1,Middle Water,summer,low,0.6,7.7,0.25,0.13,0.14,23.7,0,0.004,11,5.9,0.021,1.1
+Port Shelter,PM11,Bluff Island,BI,19/8/2019,1,Surface Water,summer,low,2.4,10.8,0.18,0.18,0.02,32.9,1.3,0,2,6,0.019,1.2
+Port Shelter,PM9,Bluff Island,BI,19/8/2019,1,Middle Water,summer,low,1.7,10.5,0.18,0.1,0.11,34.5,1.2,0.016,1,3.2,0.032,0.4
+Port Shelter,PM11,Bluff Island,BI,19/1/2018,1,Surface Water,winter,low,1.4,7.4,0.54,0.51,0.06,32.2,2,0.003,0,8.9,0.024,1.3
+Port Shelter,PM9,Bluff Island,BI,19/1/2018,1,Middle Water,winter,low,1.3,6,0.41,0.34,0.09,32.3,1.3,0.009,2,9,0.018,0.6
+Port Shelter,PM11,Bluff Island,BI,5/2/2018,1,Surface Water,winter,low,0.6,4.7,0.65,0.6,0.08,32.6,1,0.007,0,7.9,0.027,0.3
+Port Shelter,PM9,Bluff Island,BI,5/2/2018,1,Middle Water,winter,low,0.7,0.6,0.63,0.58,0.07,32.5,0.8,0.006,1,8,0.023,0.3
+Port Shelter,PM11,Bluff Island,BI,12/3/2018,1,Surface Water,winter,low,1.6,0.3,0.19,0.19,0.02,32.4,1.6,0,0,9.3,0.013,1.1
+Port Shelter,PM9,Bluff Island,BI,12/3/2018,1,Middle Water,winter,low,1.8,0.1,0.59,0.59,0.01,32.4,1.6,0,0,9.1,0.009,1.3
+Port Shelter,PM11,Bluff Island,BI,18/4/2018,1,Surface Water,spring,low,0.6,0.7,0.4,0.4,0.02,33.7,0.4,0,0,6,0.02,0.6
+Port Shelter,PM9,Bluff Island,BI,18/4/2018,1,Middle Water,spring,low,1.5,0.7,0.77,0.77,0.03,33.8,0,0.01,0,6.7,0.023,0.5
+Port Shelter,PM11,Bluff Island,BI,15/11/2018,1,Surface Water,winter,low,1.6,2.2,0.17,0.15,0.03,33,1.1,0.006,0,5.5,0.011,0
+Port Shelter,PM9,Bluff Island,BI,15/11/2018,1,Middle Water,winter,low,1.9,2.2,0.36,0.35,0.03,33.1,1.3,0.008,0,6.1,0.014,0
+Port Shelter,PM11,Bluff Island,BI,14/12/2018,1,Surface Water,winter,low,1.7,2.2,0.13,0.12,0.01,33.4,1.3,0.008,0,4.1,0,0.3
+Port Shelter,PM9,Bluff Island,BI,14/12/2018,1,Middle Water,winter,low,1.8,1.7,0.08,0.08,0.01,33.4,0.9,0.009,0,3.9,0.008,0.4
+Port Shelter,PM11,Bluff Island,BI,18/1/2019,1,Surface Water,winter,low,0,1.3,0.4,0.21,0.2,31.7,0.7,0.02,0,7.2,0.016,0.4
+Port Shelter,PM9,Bluff Island,BI,18/1/2019,1,Middle Water,winter,low,0,0.4,0.42,0.26,0.17,31.9,0.8,0.018,0,7.9,0.011,0.6
+Port Shelter,PM11,Bluff Island,BI,11/2/2019,1,Surface Water,winter,low,2,0.4,0.37,0.36,0.04,32.1,1.8,0,0,7.3,0.025,2
+Port Shelter,PM9,Bluff Island,BI,11/2/2019,1,Middle Water,winter,low,0.8,0.3,0.32,0.27,0.07,32.5,0.7,0.011,0,7.6,0.021,0.6
+Port Shelter,PM11,Bluff Island,BI,6/3/2019,1,Surface Water,winter,low,1.5,0.2,0.88,0.86,0.04,32.5,0.7,0,1,6.9,0.029,0.5
+Port Shelter,PM9,Bluff Island,BI,6/3/2019,1,Middle Water,winter,low,1.5,0.3,0.4,0.39,0.04,32.8,0.7,0,0,7.4,0.023,0.4
+Port Shelter,PM11,Bluff Island,BI,4/4/2019,1,Surface Water,spring,low,2.4,1.5,0.26,0.25,0.02,33.8,0.8,0.008,0,6.1,0.013,0.4
+Port Shelter,PM9,Bluff Island,BI,4/4/2019,1,Middle Water,spring,low,2.1,0.6,0.32,0.31,0.02,33.7,1.2,0.007,1,5.3,0.011,0.5
+Mirs Bay,MM8,Cape D'Aguilar,CDA,14/5/2018,1,Surface Water,summer,low,3.4,0.5,0.25,0.25,0.01,33.8,1,0,0,6.8,0.007,0.6
+Southern,SM1,Cape D'Aguilar,CDA,16/5/2018,1,Middle Water,summer,low,0.6,1.1,0.38,0.31,0.1,33.5,1.3,0,7,6.8,0.035,0.8
+Mirs Bay,MM8,Cape D'Aguilar,CDA,11/6/2018,1,Surface Water,summer,low,1.5,0.7,0.61,0.59,0.04,31.8,0.4,0,0,5.8,0.018,0.4
+Southern,SM1,Cape D'Aguilar,CDA,21/6/2018,1,Middle Water,summer,low,0.7,1.2,0.62,0.48,0.17,29.9,2.3,0.006,1,5.8,0.027,0.8
+Southern,SM1,Cape D'Aguilar,CDA,16/7/2018,1,Middle Water,summer,low,1.1,3.3,0.67,0.66,0.02,32.2,0.5,0.009,0,5.3,0.015,0
+Mirs Bay,MM8,Cape D'Aguilar,CDA,23/7/2018,1,Surface Water,summer,low,2,5.8,0.8,0.8,0.01,31.8,1.7,0,0,6.8,0.009,0.9
+Mirs Bay,MM8,Cape D'Aguilar,CDA,16/8/2018,1,Surface Water,summer,low,0,1.2,0.13,0.09,0.06,31.3,0,0.007,0,5.9,0.019,0.3
+Southern,SM1,Cape D'Aguilar,CDA,23/8/2018,1,Middle Water,summer,low,2.1,0.6,0.15,0.09,0.07,32.8,2.9,0.008,0,5.2,0.011,0.6
+Southern,SM1,Cape D'Aguilar,CDA,14/9/2018,1,Middle Water,summer,low,1.8,0.7,0.17,0.14,0.04,31.7,0.7,0.006,0,5.2,0.011,0.8
+Mirs Bay,MM8,Cape D'Aguilar,CDA,21/9/2018,1,Surface Water,summer,low,1.4,3.4,0.28,0.27,0.01,32.2,3.3,0.008,0,6.6,0,0.7
+Mirs Bay,MM8,Cape D'Aguilar,CDA,10/10/2018,1,Surface Water,autumn,low,0.5,0.3,0.21,0.21,0,32.6,0.4,0.008,0,6.1,0,0.3
+Southern,SM1,Cape D'Aguilar,CDA,25/10/2018,1,Middle Water,autumn,low,0,0.7,0.35,0.33,0.04,32.9,0.2,0.01,0,6.4,0.014,0.2
+Southern,SM1,Cape D'Aguilar,CDA,6/5/2019,1,Middle Water,summer,low,0.8,1.3,0.22,0.2,0.04,33.1,1.3,0.009,5,5.2,0.019,0.4
+Mirs Bay,MM8,Cape D'Aguilar,CDA,20/5/2019,1,Surface Water,summer,low,2,0.3,0.29,0.24,0.06,31.6,1.1,0.003,0,6.6,0,1.2
+Mirs Bay,MM8,Cape D'Aguilar,CDA,10/6/2019,1,Surface Water,summer,low,3,1.1,0.6,0.38,0.23,27.8,4.4,0.003,1,6.9,0,2.3
+Southern,SM1,Cape D'Aguilar,CDA,24/6/2019,1,Middle Water,summer,low,1.9,0.7,0.63,0.42,0.24,29.9,2.1,0.003,13,6.7,0.028,1.7
+Southern,SM1,Cape D'Aguilar,CDA,15/7/2019,1,Middle Water,summer,low,3,3.6,0.47,0.21,0.28,31.7,9,0.008,12,8.5,0.017,3.2
+Mirs Bay,MM8,Cape D'Aguilar,CDA,17/7/2019,1,Surface Water,summer,low,3.7,2.8,0.24,0.18,0.08,28.6,0.7,0.013,0,7.3,0.017,0.5
+Southern,SM1,Cape D'Aguilar,CDA,16/8/2019,1,Middle Water,summer,low,1.6,2.3,0.21,0.12,0.12,33.8,0.7,0.016,1,3.2,0.032,0.5
+Mirs Bay,MM8,Cape D'Aguilar,CDA,22/8/2019,1,Surface Water,summer,low,1.6,11.4,0.46,0.46,0,31.4,2.1,0,1,7.5,0,3.6
+Mirs Bay,MM8,Cape D'Aguilar,CDA,17/1/2018,1,Surface Water,winter,low,0.8,7.2,1.25,1.1,0.16,32.2,0.2,0.016,0,7.5,0.006,0.4
+Southern,SM1,Cape D'Aguilar,CDA,18/1/2018,1,Middle Water,winter,low,0.7,5.7,0.38,0.22,0.17,32.3,0.9,0.015,1,8.2,0.01,1
+Mirs Bay,MM8,Cape D'Aguilar,CDA,9/2/2018,1,Surface Water,winter,low,1.1,5.9,0.43,0.37,0.07,32.7,0,0.005,0,7.8,0.012,0
+Southern,SM1,Cape D'Aguilar,CDA,24/2/2018,1,Middle Water,winter,low,0.9,0.1,1.02,0.91,0.14,32.5,0,0.012,0,7.9,0.025,0
+Mirs Bay,MM8,Cape D'Aguilar,CDA,2/3/2018,1,Surface Water,winter,low,0,3.5,0.27,0.19,0.09,32.3,0.4,0.004,0,7.6,0.014,0
+Southern,SM1,Cape D'Aguilar,CDA,5/3/2018,1,Middle Water,winter,low,1.2,0.1,0.56,0.45,0.17,32.3,0,0.007,93,7.5,0.056,0.2
+Mirs Bay,MM8,Cape D'Aguilar,CDA,13/4/2018,1,Surface Water,spring,low,1.8,1.2,0.2,0.2,0.03,34.1,0,0,0,6.3,0.022,0.4
+Southern,SM1,Cape D'Aguilar,CDA,23/4/2018,1,Middle Water,spring,low,0.9,1.2,0.23,0.22,0.03,33.9,1.1,0,0,6.7,0.029,0.5
+Southern,SM1,Cape D'Aguilar,CDA,14/11/2018,1,Middle Water,winter,low,1.5,2.3,0.21,0.2,0.02,33.2,1.6,0.008,0,6.2,0.01,0
+Mirs Bay,MM8,Cape D'Aguilar,CDA,19/11/2018,1,Surface Water,winter,low,1.3,1.6,0.73,0.69,0.04,33.1,1.2,0.013,0,5.8,0,0.3
+Southern,SM1,Cape D'Aguilar,CDA,12/12/2018,1,Middle Water,winter,low,1.2,2.7,0.13,0.13,0,33.3,0.6,0.007,1,4,0,0.4
+Mirs Bay,MM8,Cape D'Aguilar,CDA,17/12/2018,1,Surface Water,winter,low,2.6,2.9,0.12,0.08,0.04,33.4,0.4,0.01,0,4.2,0,0
+Southern,SM1,Cape D'Aguilar,CDA,10/1/2019,1,Middle Water,winter,low,2.1,1.6,0.36,0.19,0.17,32.2,0.6,0.017,0,7.7,0,0.5
+Mirs Bay,MM8,Cape D'Aguilar,CDA,17/1/2019,1,Surface Water,winter,low,0,1.1,0.36,0.18,0.18,31.7,0.5,0.02,0,7.7,0.009,0.1
+Mirs Bay,MM8,Cape D'Aguilar,CDA,15/2/2019,1,Surface Water,winter,low,2.2,2,0.34,0.31,0.05,32.5,1.1,0,0,7.2,0.02,0.5
+Southern,SM1,Cape D'Aguilar,CDA,20/2/2019,1,Middle Water,winter,low,0.6,0.6,0.54,0.5,0.08,32.6,0.7,0,42,7.7,0.04,0.4
+Southern,SM1,Cape D'Aguilar,CDA,15/3/2019,1,Middle Water,winter,low,0.9,0.7,0.44,0.44,0.02,33.4,1.4,0,27,7.2,0.017,0.3
+Mirs Bay,MM8,Cape D'Aguilar,CDA,20/3/2019,1,Surface Water,winter,low,0.9,0.1,0.38,0.37,0.01,34.4,0.6,0,0,6.2,0,0
+Southern,SM1,Cape D'Aguilar,CDA,8/4/2019,1,Middle Water,spring,low,1.8,0.5,0.34,0.34,0.01,33.9,0.9,0.006,0,6.1,0.008,0.2
+Mirs Bay,MM8,Cape D'Aguilar,CDA,18/4/2019,1,Surface Water,spring,low,0.5,0.3,0.07,0.07,0.01,33.7,0.6,0.018,0,5.8,0.008,0.2
+Tolo Harbour and Channel,TM4,Center Island,CI,21/5/2018,1,Middle Water,summer,high,1.9,0.9,0.43,0.43,0.05,32.6,1.5,0.003,17,7.3,0.041,1
+Tolo Harbour and Channel,TM4,Center Island,CI,27/6/2018,1,Middle Water,summer,high,1.5,0.8,0.34,0.33,0.05,30.3,3.3,0.005,5,8.6,0.042,1.7
+Tolo Harbour and Channel,TM4,Center Island,CI,9/7/2018,1,Middle Water,summer,high,2.8,0.9,0.38,0.38,0.01,29.5,2.5,0.006,0,5.5,0.007,1.1
+Tolo Harbour and Channel,TM4,Center Island,CI,17/8/2018,1,Middle Water,summer,high,1.1,0.1,0.12,0.12,0.04,30.4,0.3,0.005,0,5.3,0.038,1
+Tolo Harbour and Channel,TM4,Center Island,CI,19/9/2018,1,Middle Water,summer,high,1.3,0.5,0.27,0.27,0.05,25.7,1.5,0.009,78,6.7,0.048,0.2
+Tolo Harbour and Channel,TM4,Center Island,CI,5/10/2018,1,Middle Water,autumn,high,3.5,0.6,0.28,0.28,0.02,28.9,1.2,0,120,6.2,0.017,1.8
+Tolo Harbour and Channel,TM4,Center Island,CI,2/5/2019,1,Middle Water,summer,high,3.6,0.4,0.28,0.27,0.05,30.6,0.4,0.006,30,5.5,0.036,0.7
+Tolo Harbour and Channel,TM4,Center Island,CI,28/6/2019,1,Middle Water,summer,high,1.8,0.7,0.4,0.39,0.01,30.2,1.5,0,4,5.6,0.008,1.7
+Tolo Harbour and Channel,TM4,Center Island,CI,11/7/2019,1,Middle Water,summer,high,1.8,16.2,0.29,0.28,0.05,24.6,2.7,0,19,4.8,0.035,1
+Tolo Harbour and Channel,TM4,Center Island,CI,21/8/2019,1,Middle Water,summer,high,2.1,10.2,0.17,0.17,0.03,32.1,1.4,0,1,6.9,0.03,2.7
+Tolo Harbour and Channel,TM4,Center Island,CI,10/1/2018,1,Middle Water,winter,high,1.8,7.5,1.41,1.4,0.07,31.8,1.4,0.005,40,5.5,0.061,0.5
+Tolo Harbour and Channel,TM4,Center Island,CI,26/2/2018,1,Middle Water,winter,high,1.8,0.2,0.37,0.35,0.05,31.7,2.9,0,11,8.5,0.026,1
+Tolo Harbour and Channel,TM4,Center Island,CI,9/3/2018,1,Middle Water,winter,high,1.4,6.8,0.32,0.31,0.04,31.5,1.8,0,35,8.1,0.025,1.4
+Tolo Harbour and Channel,TM4,Center Island,CI,20/4/2018,1,Middle Water,spring,high,2.4,1,0.71,0.71,0.05,32,2.3,0,1,8.5,0.042,1.8
+Tolo Harbour and Channel,TM4,Center Island,CI,5/11/2018,1,Middle Water,winter,high,3.3,1,0.36,0.36,0.03,31.3,3.9,0.006,15,6.4,0.026,2.3
+Tolo Harbour and Channel,TM4,Center Island,CI,7/12/2018,1,Middle Water,winter,high,2,0.7,0.5,0.5,0.03,31.1,3.4,0.003,6,6.7,0.029,2.5
+Tolo Harbour and Channel,TM4,Center Island,CI,3/1/2019,1,Middle Water,winter,high,1,0.9,0.17,0.17,0.03,32.8,0.9,0.004,30,7.3,0.03,0.6
+Tolo Harbour and Channel,TM4,Center Island,CI,14/2/2019,1,Middle Water,winter,high,2.3,0.2,0.45,0.45,0.04,31.9,0.9,0,2,8.5,0.033,1.2
+Tolo Harbour and Channel,TM4,Center Island,CI,18/3/2019,1,Middle Water,winter,high,1.9,0.5,0.66,0.66,0.02,30.4,3.6,0.003,2,6.9,0.012,1.6
+Tolo Harbour and Channel,TM4,Center Island,CI,1/4/2019,1,Middle Water,spring,high,2.1,0.8,0.58,0.58,0.02,31.5,1.5,0,1,5.9,0.015,0
+Southern,SM9,Peng Chau,PC,2/5/2018,1,Middle Water,summer,high,0.9,1.6,1.22,0.99,0.35,31.3,0.5,0.02,320,6.4,0.12,0.6
+Southern,SM10,Peng Chau,PC,4/5/2018,1,Bottom Water,summer,high,2,4.2,1.03,0.77,0.33,30.5,2.6,0.011,54,7.1,0.07,1.6
+Southern,SM9,Peng Chau,PC,4/6/2018,1,Middle Water,summer,high,2.5,1.7,0.65,0.44,0.25,29.7,2.1,0,6,5.6,0.039,1.5
+Southern,SM10,Peng Chau,PC,22/6/2018,1,Bottom Water,summer,high,8.1,8.3,0.74,0.3,0.54,25.3,4.1,0.02,75,4.8,0.1,0.9
+Southern,SM9,Peng Chau,PC,6/7/2018,1,Middle Water,summer,high,2.2,2.7,0.72,0.27,0.5,24.9,2.9,0.024,460,4.9,0.049,0.9
+Southern,SM10,Peng Chau,PC,26/7/2018,1,Bottom Water,summer,high,2.6,5.2,0.43,0.22,0.24,27.3,6.9,0.007,6,8.4,0.024,1.5
+Southern,SM9,Peng Chau,PC,6/8/2018,1,Middle Water,summer,high,1.2,5.9,0.69,0.38,0.39,29.5,3.8,0.025,48,3.4,0.08,0.8
+Southern,SM10,Peng Chau,PC,13/8/2018,1,Bottom Water,summer,high,2.5,3.8,0.94,0.6,0.47,27.7,0.6,0.027,27,4.2,0.13,0.4
+Southern,SM9,Peng Chau,PC,5/9/2018,1,Middle Water,summer,high,0.8,3.1,0.99,0.24,0.78,26.3,1.7,0.033,310,3.9,0.034,0.5
+Southern,SM10,Peng Chau,PC,13/9/2018,1,Bottom Water,summer,high,4.4,7,0.66,0.26,0.46,29.3,2,0.015,27,4.2,0.061,0.7
+Southern,SM9,Peng Chau,PC,3/10/2018,1,Middle Water,autumn,high,2.8,4.4,0.72,0.38,0.41,30.3,1.2,0.026,2600,4.6,0.072,0
+Southern,SM10,Peng Chau,PC,22/10/2018,1,Bottom Water,autumn,high,2.6,3.5,0.4,0.26,0.16,31.9,2.3,0.014,5,6.4,0.024,1
+Southern,SM9,Peng Chau,PC,9/5/2019,1,Middle Water,summer,high,1,2.9,0.67,0.38,0.44,29.4,0,0.022,44,4.4,0.15,0.3
+Southern,SM10,Peng Chau,PC,17/5/2019,1,Bottom Water,summer,high,2.2,1.6,0.57,0.28,0.33,29,0.9,0.007,15,5.5,0.041,0.8
+Southern,SM9,Peng Chau,PC,6/6/2019,1,Middle Water,summer,high,2.2,2,0.75,0.32,0.5,25.3,0.8,0.022,39,4.9,0.076,0.6
+Southern,SM10,Peng Chau,PC,17/6/2019,1,Bottom Water,summer,high,1.9,2.9,0.72,0.32,0.45,26.1,5.9,0.016,13,6.4,0.046,1.1
+Southern,SM10,Peng Chau,PC,12/7/2019,1,Bottom Water,summer,high,1.2,9,0.55,0.14,0.43,25.4,2,0,130,4.5,0.028,1.4
+Southern,SM9,Peng Chau,PC,24/7/2019,1,Middle Water,summer,high,3.1,1.9,0.59,0.37,0.3,26.9,5.6,0.004,56,8.3,0.08,1.7
+Southern,SM9,Peng Chau,PC,9/8/2019,1,Middle Water,summer,high,0.9,15.8,0.62,0.27,0.44,27.7,2,0.008,250,4.8,0.092,0.7
+Southern,SM10,Peng Chau,PC,15/8/2019,1,Bottom Water,summer,high,3,3,0.74,0.41,0.39,27,3.6,0.008,12,6.6,0.066,1.5
+Southern,SM9,Peng Chau,PC,4/1/2018,1,Middle Water,winter,high,1.5,8.2,0.54,0.24,0.45,31.9,0.8,0.033,91,7,0.15,0.8
+Southern,SM10,Peng Chau,PC,15/1/2018,1,Bottom Water,winter,high,2.3,8.8,0.41,0.2,0.22,32.3,1.5,0.015,12,7.6,0.011,1.1
+Southern,SM9,Peng Chau,PC,1/2/2018,1,Middle Water,winter,high,2.1,3.7,0.98,0.91,0.26,32.6,0.7,0.018,43,7.4,0.19,0.8
+Southern,SM10,Peng Chau,PC,21/2/2018,1,Bottom Water,winter,high,1.9,1,0.66,0.48,0.31,31.8,1.3,0.017,61,7.5,0.13,0.8
+Southern,SM9,Peng Chau,PC,16/3/2018,1,Middle Water,winter,high,1.7,1.5,0.76,0.64,0.2,31.8,3.2,0.01,130,7.7,0.076,1.2
+Southern,SM10,Peng Chau,PC,21/3/2018,1,Bottom Water,winter,high,1,2.4,0.52,0.31,0.36,31.2,0.5,0.014,160,6.6,0.15,0.7
+Southern,SM9,Peng Chau,PC,4/4/2018,1,Middle Water,spring,high,2,1.9,0.58,0.43,0.26,31,1.1,0.024,220,6.1,0.11,0
+Southern,SM10,Peng Chau,PC,19/4/2018,1,Bottom Water,spring,high,2,3.7,0.8,0.64,0.28,32.1,0.4,0.019,4,5.8,0.12,0.3
+Southern,SM9,Peng Chau,PC,1/11/2018,1,Middle Water,winter,high,1.4,4.3,0.39,0.29,0.2,32.4,1.2,0.014,8500,6.3,0.1,0.5
+Southern,SM10,Peng Chau,PC,22/11/2018,1,Bottom Water,winter,high,1.3,5.8,0.47,0.27,0.28,32.1,1.5,0.026,3,5.4,0.078,0.8
+Southern,SM9,Peng Chau,PC,3/12/2018,1,Middle Water,winter,high,1.3,3.5,0.43,0.14,0.33,31.9,0,0.025,8,5.2,0.038,0.6
+Southern,SM10,Peng Chau,PC,10/12/2018,1,Bottom Water,winter,high,1.7,4.7,0.57,0.32,0.31,31.9,0.6,0.026,8,5.2,0.057,0.2
+Southern,SM9,Peng Chau,PC,4/1/2019,1,Middle Water,winter,high,0.6,4.7,0.23,0.13,0.15,33.3,0.8,0.018,15,6.8,0.051,0.4
+Southern,SM10,Peng Chau,PC,11/1/2019,1,Bottom Water,winter,high,2.2,2.2,0.42,0.27,0.25,33.1,0.7,0.021,5,7.2,0.1,0.8
+Southern,SM9,Peng Chau,PC,8/2/2019,1,Middle Water,winter,high,1.5,1.2,0.84,0.53,0.39,30.3,2.3,0.012,83,8.5,0.079,1.3
+Southern,SM10,Peng Chau,PC,25/2/2019,1,Bottom Water,winter,high,1.7,1.2,0.52,0.38,0.17,30.9,2.3,0,9,7.9,0.035,1.6
+Southern,SM10,Peng Chau,PC,14/3/2019,1,Bottom Water,winter,high,0.7,2.2,0.77,0.47,0.43,29.9,0.7,0.022,15,6.4,0.13,0.3
+Southern,SM9,Peng Chau,PC,25/3/2019,1,Middle Water,winter,high,1.6,1.9,0.73,0.54,0.33,31.1,1.2,0.022,5,5,0.14,0.4
+Southern,SM9,Peng Chau,PC,10/4/2019,1,Middle Water,spring,high,2.8,0.5,0.59,0.27,0.4,30,0.6,0.017,250,5.2,0.083,0.5
+Southern,SM10,Peng Chau,PC,25/4/2019,1,Bottom Water,spring,high,5.4,1.8,0.99,0.41,0.61,25.5,4.3,0.018,4,7,0.031,2.2
+North Western,NM8,San Shek Wan,SSW,10/5/2018,1,Middle Water,summer,high,2.7,3,0.63,0.39,0.28,30.2,2.1,0.003,3,6.8,0.038,1
+North Western,NM8,San Shek Wan,SSW,6/6/2018,1,Middle Water,summer,high,1.4,1,0.46,0.16,0.37,24.9,1.8,0.01,1,4.9,0.077,0.8
+North Western,NM8,San Shek Wan,SSW,11/7/2018,1,Middle Water,summer,high,3.2,5.7,0.86,0.26,0.64,19.6,7.3,0.012,8,8.2,0.036,1.3
+North Western,NM8,San Shek Wan,SSW,15/8/2018,1,Middle Water,summer,high,0.9,6.5,0.5,0.16,0.38,26.8,0.7,0.02,5,5.3,0.04,0.2
+North Western,NM8,San Shek Wan,SSW,6/9/2018,1,Middle Water,summer,high,1.4,6.1,1.18,0.2,1,23,2,0.028,150,4.5,0.018,0.8
+North Western,NM8,San Shek Wan,SSW,15/10/2018,1,Middle Water,summer,high,2,3.2,0.52,0.16,0.37,28.1,1.2,0.016,4,5.6,0.005,0.4
+North Western,NM8,San Shek Wan,SSW,15/5/2019,1,Middle Water,summer,high,4.3,5.9,0.84,0.38,0.48,23.6,9.1,0.004,2,7.9,0.023,1.5
+North Western,NM8,San Shek Wan,SSW,20/6/2019,1,Middle Water,summer,high,2.2,4,0.78,0.3,0.55,21.8,0,0.009,8,4.2,0.066,0.5
+North Western,NM8,San Shek Wan,SSW,3/7/2019,1,Middle Water,summer,high,1.8,20.3,0.6,0.11,0.51,17.6,5.1,0.013,9,4.8,0.023,0.6
+North Western,NM8,San Shek Wan,SSW,17/8/2019,1,Middle Water,summer,high,1.9,4.5,0.54,0.28,0.28,31,0.6,0.017,4,3.7,0.018,0.5
+North Western,NM8,San Shek Wan,SSW,11/1/2018,1,Middle Water,winter,high,1.6,6.8,0.58,0.4,0.22,32,0.6,0.011,1,6.3,0.043,0.3
+North Western,NM8,San Shek Wan,SSW,23/2/2018,1,Middle Water,winter,high,2.4,9.6,0.53,0.34,0.27,31.4,1.5,0.007,6,8.2,0.078,0.5
+North Western,NM8,San Shek Wan,SSW,8/3/2018,1,Middle Water,winter,high,1.3,8.7,1.09,0.76,0.42,29.6,1.2,0,89,7.8,0.094,1.1
+North Western,NM8,San Shek Wan,SSW,12/4/2018,1,Middle Water,spring,high,2.5,4.2,0.51,0.34,0.22,31.3,2.1,0,540,7.2,0.052,0.7
+North Western,NM8,San Shek Wan,SSW,8/11/2018,1,Middle Water,winter,high,5.6,8.4,0.4,0.2,0.22,31,2.8,0.009,5,7,0.019,0.9
+North Western,NM8,San Shek Wan,SSW,6/12/2018,1,Middle Water,winter,high,0.9,5.4,0.49,0.26,0.24,31.2,0.5,0.011,3,5.4,0.008,0.6
+North Western,NM8,San Shek Wan,SSW,23/1/2019,1,Middle Water,winter,high,4.8,14.8,0.94,0.72,0.26,31.8,0.8,0.011,19,7.5,0.032,0.6
+North Western,NM8,San Shek Wan,SSW,22/2/2019,1,Middle Water,winter,high,2,4.7,0.9,0.5,0.45,27.7,1.9,0.004,5,7.3,0.055,0.7
+North Western,NM8,San Shek Wan,SSW,4/3/2019,1,Middle Water,winter,high,2.6,2.1,0.86,0.53,0.35,29.8,4,0,0,8.6,0.025,2.3
+North Western,NM8,San Shek Wan,SSW,3/4/2019,1,Middle Water,spring,high,2.8,2.7,0.52,0.29,0.3,30.2,0.3,0.009,5,5.2,0.064,0.6
+Southern,SM18,Sham Wan ,SW,16/5/2018,1,Surface Water,summer,medium,1,1.5,0.8,0.13,0.69,23.6,1.9,0,5,9.1,0.021,2.1
+Southern,SM19,Sham Wan ,SW,16/5/2018,1,Surface Water,summer,medium,0.7,5.2,0.68,0.12,0.58,25.1,1.3,0,1,8.5,0.019,1.4
+Southern,SM5,Sham Wan ,SW,16/5/2018,1,Middle Water,summer,medium,1.2,0.8,0.65,0.24,0.44,26.6,3.8,0.002,7,8.7,0.029,1.7
+Southern,SM18,Sham Wan ,SW,21/6/2018,1,Surface Water,summer,medium,2.2,2.6,0.68,0.29,0.41,24.9,3.3,0.006,0,7.3,0.021,1.8
+Southern,SM19,Sham Wan ,SW,21/6/2018,1,Surface Water,summer,medium,1.9,2.3,0.17,0.13,0.06,27.2,1.7,0.003,0,8.1,0.023,1.6
+Southern,SM5,Sham Wan ,SW,21/6/2018,1,Middle Water,summer,medium,1.3,2.3,0.8,0.31,0.51,25.3,2.6,0.013,7,5,0.024,1.1
+Southern,SM18,Sham Wan ,SW,16/7/2018,1,Surface Water,summer,medium,0.9,3.8,0.57,0.53,0.08,31.8,0.8,0.009,1,6,0.031,0.5
+Southern,SM19,Sham Wan ,SW,16/7/2018,1,Surface Water,summer,medium,0.9,3,0.44,0.42,0.04,32,0.6,0.01,1,5.1,0.025,0.7
+Southern,SM5,Sham Wan ,SW,16/7/2018,1,Middle Water,summer,medium,1.4,4.5,0.85,0.81,0.08,31.8,0.8,0.011,16,4.4,0.035,0.4
+Southern,SM18,Sham Wan ,SW,23/8/2018,1,Surface Water,summer,medium,3.2,1.2,0.39,0.18,0.24,28.2,4.1,0.005,0,7.8,0.028,1.5
+Southern,SM19,Sham Wan ,SW,23/8/2018,1,Surface Water,summer,medium,1.6,0.4,0.14,0.08,0.07,30.6,1.2,0.004,0,7.3,0.016,0.9
+Southern,SM5,Sham Wan ,SW,23/8/2018,1,Middle Water,summer,medium,3,1.5,0.23,0.15,0.1,31.6,4,0.008,5,6.6,0.011,1.1
+Southern,SM18,Sham Wan ,SW,14/9/2018,1,Surface Water,summer,medium,1.7,2.5,0.24,0.15,0.12,30.9,1.2,0.006,0,6,0.022,0.7
+Southern,SM19,Sham Wan ,SW,14/9/2018,1,Surface Water,summer,medium,1.8,5.2,0.19,0.14,0.07,31.6,0.9,0.005,1,6.1,0.019,0.6
+Southern,SM5,Sham Wan ,SW,14/9/2018,1,Middle Water,summer,medium,2.8,2.3,0.42,0.23,0.23,30.7,1.7,0.011,0,4.9,0.044,0.5
+Southern,SM18,Sham Wan ,SW,25/10/2018,1,Surface Water,autumn,medium,0.7,1.9,0.27,0.23,0.05,33,0,0.01,0,5.4,0.009,0.3
+Southern,SM19,Sham Wan ,SW,25/10/2018,1,Surface Water,autumn,medium,0.6,1.9,0.36,0.33,0.04,33.1,0.6,0.01,0,6.3,0.008,0.3
+Southern,SM5,Sham Wan ,SW,25/10/2018,1,Middle Water,autumn,medium,0.6,1.2,0.25,0.2,0.06,32.9,0.7,0.011,0,5.3,0.007,0.3
+Southern,SM18,Sham Wan ,SW,6/5/2019,1,Surface Water,summer,medium,2.8,0.9,0.17,0.14,0.04,33.1,0.6,0.005,16,5.7,0.014,0.4
+Southern,SM19,Sham Wan ,SW,6/5/2019,1,Surface Water,summer,medium,2.6,1.9,0.21,0.19,0.03,33.2,1.9,0.008,0,4.8,0.013,0.5
+Southern,SM5,Sham Wan ,SW,6/5/2019,1,Middle Water,summer,medium,1.2,2.8,0.25,0.18,0.1,32.7,1.7,0.01,5,4.7,0.03,0.4
+Southern,SM18,Sham Wan ,SW,24/6/2019,1,Surface Water,summer,medium,2.3,1.5,0.64,0.21,0.46,21.9,3.5,0.004,39,7.2,0.029,1.5
+Southern,SM19,Sham Wan ,SW,24/6/2019,1,Surface Water,summer,medium,2.5,1.3,0.54,0.18,0.37,22.8,4.2,0.003,19,7.5,0.019,2.2
+Southern,SM5,Sham Wan ,SW,24/6/2019,1,Middle Water,summer,medium,2.4,1.3,0.76,0.33,0.46,21.8,3.1,0.004,25,6.1,0.029,1.3
+Southern,SM18,Sham Wan ,SW,15/7/2019,1,Surface Water,summer,medium,3.5,3.7,0.85,0.37,0.48,17.4,12,0.018,12,7.9,0,4.3
+Southern,SM19,Sham Wan ,SW,15/7/2019,1,Surface Water,summer,medium,3.4,3.3,0.83,0.34,0.49,19.6,8,0.016,2,8,0,3.1
+Southern,SM5,Sham Wan ,SW,15/7/2019,1,Middle Water,summer,medium,1,3.4,0.47,0.12,0.38,22.3,5.7,0.006,69,6.4,0.034,1.1
+Southern,SM18,Sham Wan ,SW,16/8/2019,1,Surface Water,summer,medium,4.7,2.7,0.48,0.27,0.24,27.5,6.2,0.004,2,7.1,0.026,2.6
+Southern,SM19,Sham Wan ,SW,16/8/2019,1,Surface Water,summer,medium,1,2.5,0.19,0.12,0.09,28.8,0.8,0.013,0,7.5,0.017,2.1
+Southern,SM5,Sham Wan ,SW,16/8/2019,1,Middle Water,summer,medium,3.3,3.2,0.53,0.34,0.22,28.2,3.3,0.005,1,6.3,0.032,1.4
+Southern,SM18,Sham Wan ,SW,18/1/2018,1,Surface Water,winter,medium,0.8,7.7,0.35,0.22,0.14,32.5,0.6,0.014,0,7.7,0.008,0.3
+Southern,SM19,Sham Wan ,SW,18/1/2018,1,Surface Water,winter,medium,0.6,7.6,0.45,0.3,0.16,32.4,1.1,0.017,0,7.7,0.012,0.3
+Southern,SM5,Sham Wan ,SW,18/1/2018,1,Middle Water,winter,medium,0.6,8.2,0.29,0.14,0.16,32.7,0.9,0.016,0,6.8,0,0.7
+Southern,SM18,Sham Wan ,SW,24/2/2018,1,Surface Water,winter,medium,0.8,3.9,0.27,0.17,0.12,32.7,0.4,0.011,0,7.8,0.022,0
+Southern,SM19,Sham Wan ,SW,24/2/2018,1,Surface Water,winter,medium,1.3,5.2,0.58,0.47,0.14,32.5,0,0.014,1,7.4,0.026,0.1
+Southern,SM5,Sham Wan ,SW,24/2/2018,1,Middle Water,winter,medium,1.3,0.4,0.38,0.31,0.1,32.8,0.5,0.008,0,7.8,0.033,0.1
+Southern,SM18,Sham Wan ,SW,5/3/2018,1,Surface Water,winter,medium,1.2,0.3,0.38,0.3,0.11,32.3,0.4,0.007,0,9.1,0.023,1
+Southern,SM19,Sham Wan ,SW,5/3/2018,1,Surface Water,winter,medium,0.9,0.1,0.93,0.8,0.2,32.2,0.5,0.008,0,7.6,0.074,0
+Southern,SM5,Sham Wan ,SW,5/3/2018,1,Middle Water,winter,medium,1.3,0.4,0.51,0.46,0.07,32.5,0.4,0.004,2,8.8,0.02,0.5
+Southern,SM18,Sham Wan ,SW,23/4/2018,1,Surface Water,spring,medium,1.6,0.9,0.41,0.21,0.21,33.7,0.5,0,0,7.4,0.012,1
+Southern,SM19,Sham Wan ,SW,23/4/2018,1,Surface Water,spring,medium,1.1,0.9,0.15,0.15,0,33.8,1.4,0,0,6.7,0,0.7
+Southern,SM5,Sham Wan ,SW,23/4/2018,1,Middle Water,spring,medium,2.5,1.4,0.12,0.12,0,33.8,2.8,0,0,8.2,0,1.3
+Southern,SM18,Sham Wan ,SW,14/11/2018,1,Surface Water,winter,medium,2,3.9,0.28,0.24,0.05,33.2,1.2,0.011,0,6.1,0,0.4
+Southern,SM19,Sham Wan ,SW,14/11/2018,1,Surface Water,winter,medium,1.1,1.1,0.25,0.22,0.04,33.2,1,0.009,2,6.1,0.008,0.2
+Southern,SM5,Sham Wan ,SW,14/11/2018,1,Middle Water,winter,medium,2.9,4.7,0.17,0.14,0.04,33.1,2.1,0.009,1,5.7,0.006,0.4
+Southern,SM18,Sham Wan ,SW,12/12/2018,1,Surface Water,winter,medium,2.1,4.4,0.08,0.07,0.01,33.3,0.6,0.008,1,4.4,0,0.3
+Southern,SM19,Sham Wan ,SW,12/12/2018,1,Surface Water,winter,medium,1.6,2.2,0.14,0.09,0.05,33.8,1.2,0.01,0,4.3,0,0.1
+Southern,SM5,Sham Wan ,SW,12/12/2018,1,Middle Water,winter,medium,3.2,7.3,0.1,0.09,0.01,33.3,1.3,0.009,3,3.8,0.005,0.2
+Southern,SM18,Sham Wan ,SW,10/1/2019,1,Surface Water,winter,medium,1.6,3.9,0.37,0.21,0.17,32.4,0.2,0.018,1,7,0,0.6
+Southern,SM19,Sham Wan ,SW,10/1/2019,1,Surface Water,winter,medium,0.9,2.9,0.46,0.3,0.16,32.2,1,0.018,0,7,0,0.5
+Southern,SM5,Sham Wan ,SW,10/1/2019,1,Middle Water,winter,medium,1.2,2.8,0.4,0.25,0.16,32.5,0.5,0.015,1,7.6,0.006,0.6
+Southern,SM18,Sham Wan ,SW,20/2/2019,1,Surface Water,winter,medium,1.1,2.6,0.36,0.35,0.03,32.6,1.4,0,0,7.5,0.02,1.2
+Southern,SM19,Sham Wan ,SW,20/2/2019,1,Surface Water,winter,medium,0.9,2.5,0.61,0.6,0.03,32.4,1.5,0,6,7.1,0.025,1.1
+Southern,SM5,Sham Wan ,SW,20/2/2019,1,Middle Water,winter,medium,1.9,0.7,0.44,0.43,0.04,32.5,1.8,0,0,8.6,0.031,1.8
+Southern,SM18,Sham Wan ,SW,15/3/2019,1,Surface Water,winter,medium,0.9,1,0.5,0.5,0.02,33.8,0.7,0,0,6.3,0.014,0.4
+Southern,SM19,Sham Wan ,SW,15/3/2019,1,Surface Water,winter,medium,0.8,0.5,0.32,0.32,0.02,33.6,0.9,0,150,6.6,0.016,0.4
+Southern,SM5,Sham Wan ,SW,15/3/2019,1,Middle Water,winter,medium,1,2.2,0.15,0.14,0.04,33.6,0.7,0,2,6.3,0.029,0.4
+Southern,SM18,Sham Wan ,SW,8/4/2019,1,Surface Water,spring,medium,2.6,0.8,0.3,0.26,0.05,31.6,1.2,0.007,0,6.3,0.014,0.4
+Southern,SM19,Sham Wan ,SW,8/4/2019,1,Surface Water,spring,medium,2,0.5,0.29,0.25,0.05,33.4,3,0.006,0,6.6,0.014,0.6
+Southern,SM5,Sham Wan ,SW,8/4/2019,1,Middle Water,spring,medium,2.8,0.6,0.7,0.49,0.28,32.3,0.5,0.011,0,5.2,0.071,0.2
+Mirs Bay,MM5,Tung Ping Chau,TPC,11/5/2018,1,Surface Water,summer,low,1.6,5.4,0.26,0.24,0.06,33.3,0.5,0.008,1,6.5,0.033,1.7
+Mirs Bay,MM5,Tung Ping Chau,TPC,20/6/2018,1,Surface Water,summer,low,1.1,2.5,0.56,0.56,0.01,30,0.8,0.002,0,6,0.01,1.1
+Mirs Bay,MM5,Tung Ping Chau,TPC,20/7/2018,1,Surface Water,summer,low,1.2,2.7,0.12,0.12,0.03,30.9,0.6,0,1,6.3,0.021,0.6
+Mirs Bay,MM5,Tung Ping Chau,TPC,10/8/2018,1,Surface Water,summer,low,2.1,0.5,0.9,0.9,0.02,31.1,0.4,0.005,2,6.1,0.019,1.5
+Mirs Bay,MM5,Tung Ping Chau,TPC,27/9/2018,1,Surface Water,summer,low,0.5,0.3,0.17,0.17,0,30.4,0.5,0.005,0,5.4,0,0.6
+Mirs Bay,MM5,Tung Ping Chau,TPC,24/10/2018,1,Surface Water,autumn,low,0,0.4,0.25,0.25,0.02,32.2,0.6,0.006,0,6.2,0.016,0.7
+Mirs Bay,MM5,Tung Ping Chau,TPC,22/5/2019,1,Surface Water,summer,low,0,0.2,0.31,0.3,0.02,32.5,1.2,0.005,0,6.1,0.017,0.5
+Mirs Bay,MM5,Tung Ping Chau,TPC,27/6/2019,1,Surface Water,summer,low,0.9,0.4,0.2,0.2,0.01,31.1,0,0,0,5.4,0.006,1.3
+Mirs Bay,MM5,Tung Ping Chau,TPC,18/7/2019,1,Surface Water,summer,low,2.2,2.3,0.14,0.14,0.02,32,0.3,0,2,5.6,0.019,0.5
+Mirs Bay,MM5,Tung Ping Chau,TPC,14/8/2019,1,Surface Water,summer,low,1,0.8,0.22,0.21,0.03,31.3,0,0,0,5.9,0.022,0.7
+Mirs Bay,MM5,Tung Ping Chau,TPC,22/1/2018,1,Surface Water,winter,low,0.9,3.1,0.08,0,0.04,32.4,2.4,0.003,0,9,0.012,0.8
+Mirs Bay,MM5,Tung Ping Chau,TPC,8/2/2018,1,Surface Water,winter,low,1,2.8,0.71,0.64,0.08,32.6,1.1,0.008,0,7.4,0.019,0.7
+Mirs Bay,MM5,Tung Ping Chau,TPC,7/3/2018,1,Surface Water,winter,low,1.1,2.3,0.96,0.96,0.03,32.4,1.9,0,1,9.4,0.027,1.2
+Mirs Bay,MM5,Tung Ping Chau,TPC,9/4/2018,1,Surface Water,spring,low,1,1.9,0.34,0.34,0.02,32.8,0.7,0.007,0,6.4,0.019,0.6
+Mirs Bay,MM5,Tung Ping Chau,TPC,16/11/2018,1,Surface Water,winter,low,1.3,0.7,0.12,0.11,0.02,32.8,1,0.009,0,5.4,0.016,0
+Mirs Bay,MM5,Tung Ping Chau,TPC,13/12/2018,1,Surface Water,winter,low,2.9,4.1,0.13,0.12,0.02,33.4,1.5,0.008,0,6.1,0.006,0.6
+Mirs Bay,MM5,Tung Ping Chau,TPC,21/1/2019,1,Surface Water,winter,low,0.6,1,0.26,0.13,0.16,32.1,1,0.015,0,6.8,0.031,0.4
+Mirs Bay,MM5,Tung Ping Chau,TPC,18/2/2019,1,Surface Water,winter,low,1.9,0.5,0.26,0.26,0.04,32.1,1.3,0,0,6.7,0.032,0.8
+Mirs Bay,MM5,Tung Ping Chau,TPC,13/3/2019,1,Surface Water,winter,low,0.6,0.6,0.37,0.37,0.03,31.9,1.4,0,0,7.8,0.024,0.6
+Mirs Bay,MM5,Tung Ping Chau,TPC,12/4/2019,1,Surface Water,spring,low,2.2,0.3,0.08,0.08,0.02,33.2,0,0.01,3,6.8,0.013,0

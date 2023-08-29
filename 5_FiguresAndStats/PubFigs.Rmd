@@ -259,6 +259,30 @@ arms_by_site_col<-c(rep(site_colors[1],6),rep(site_colors[2],6),rep(site_colors[
 ycol<-c(rep(c1[1],18),rep(c1[5],5),rep(c1[9],18))
 ```
 
+
+# Compare Environmental Data across sites
+
+```{r env_perm, echo=FALSE, warning=FALSE}
+
+library(vegan)
+library(dplyr)
+
+
+env<-read.csv("COI_Final_working/MWQ_monthly.csv",header = T)  ##Import data
+env$month<-format(as.Date(env$Dates, format="%Y/%m/%d"),"%m")
+env<-env[,c(4,10:22)]
+env<-env %>% group_by(Site_ID,month) %>% summarise(mean(Turbidity),mean(Total_Inorganic_Nitrogen),mean(Salinity),mean(Faecal_Coliforms),mean(Dissolved_Oxygen_mgL))
+Impact<-c(rep("Low",24),rep("High",36),rep("Med",12),rep("Low",12))
+env$Impact<-Impact
+colnames(env)<-c("Site_ID","month","Turb","TIN","Sal","FC","DO","Impact")
+env<-subset(env,env$Impact != "Med")
+env.mat<-env[,3:7]
+env.dist<-vegdist(env.mat, method="euclidian")
+adonis2(env.dist~Impact,data=env, permutations = 999, strata = env$month)
+
+```
+
+
 # Plot species accumulation curves for HK Data - All, high impact, low impact
 
 ```{r spec, echo=FALSE, warning=FALSE}
@@ -435,6 +459,7 @@ HvL_all_aov<-adonis(distance(HvL_all,method="jaccard")~Impact, data=HvL_all_meta
 HvL_all_aov$aov.tab
 
 ```
+
 
 # Histogram of OTU sharing
 

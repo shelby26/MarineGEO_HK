@@ -461,6 +461,29 @@ HvL_all_aov$aov.tab
 ```
 
 
+#Statistical Comparison of OTU communities across sites and Impact
+
+```{r beta_stats, echo=FALSE}
+
+#For all OTUs (as reported in manuscript text)
+HvL_a<-subset_samples(ps_a_pa_2019, Station_ID!="SW")
+HvL_a<- prune_taxa(taxa_sums(HvL_a)>0,HvL_a)
+HvL_a_dist<-phyloseq::distance(HvL_a, method = "jaccard")
+HvL_a_sam<-data.frame(sample_data(HvL_a))
+HvL_a_aov<-adonis(HvL_a_dist ~ Impact/Station_ID, data = HvL_a_sam)
+HvL_a_aov$aov.tab
+
+#For known OTUs only
+HvL_a_k<-subset_samples(ps_a_pa_known, Station_ID!="SW")
+HvL_a_k<- prune_taxa(taxa_sums(HvL_a_k)>0,HvL_a_k)
+HvL_a_k_dist<-phyloseq::distance(HvL_a_k, method = "jaccard")
+HvL_a_k_sam<-data.frame(sample_data(HvL_a_k))
+HvL_a_k_aov<-adonis2(HvL_a_k_dist ~ Impact/Station_ID, data = HvL_a_k_sam)
+HvL_a_k_aov$aov.tab
+
+```
+
+
 # Histogram of OTU sharing
 
 ```{r uniques, echo=FALSE, message=FALSE, results='hide',fig.show="hold", out.width="50%"}

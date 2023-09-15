@@ -262,26 +262,104 @@ ycol<-c(rep(c1[1],18),rep(c1[5],5),rep(c1[9],18))
 
 # Compare Environmental Data across sites
 
-```{r env_perm, echo=FALSE, warning=FALSE}
+
+# Make heatmap with site clustering from annual means of all water quality data from all sites.
+
+```{r env_heat, echo=FALSE, warning=FALSE}
+
+library(ComplexHeatmap)
+library(vegan)
+library(dplyr)
+
+env<-marine_water_quality_2y_pool_0_binning_selectedvar
+env<-env[,c(4,10:21)]
+
+env<-env %>% group_by(Site_ID) %>% summarise(mean(`Phaeo-pigments`),
+                                             mean(Faecal_Coliforms),
+                                             mean(Turbidity),
+                                             mean(Volatile_Suspended_Solids),
+                                             mean(Orthophosphate_Phosphorus),
+                                             mean(Ammonia_Nitrogen),
+                                             mean(Total_Inorganic_Nitrogen),
+                                             mean(Total_Nitrogen),
+                                             mean(Total_Kjeldahl_Nitrogen),
+                                             mean(`5-day_Biochemical_Oxygen_Demand`),
+                                             mean(Dissolved_Oxygen_mgL),
+                                             mean(Salinity))
+
+
+colnames(env)<-c("Site_ID","PhP","FC","Turb","VSS","OP","AmN","TIN","TN","TKN","dOD","DO","Sal")
+
+env$PhP<-scale(env$PhP)
+env$FC<-scale(env$FC)
+env$Turb<-scale(env$Turb)
+env$VSS<-scale(env$VSS)
+env$OP<-scale(env$OP)
+env$AmN<-scale(env$AmN)
+env$TIN<-scale(env$TIN)
+env$TN<-scale(env$TN)
+env$TKN<-scale(env$TKN)
+env$dOD<-scale(env$dOD)
+env$DO<-scale(env$DO)
+env$Sal<-scale(env$Sal)
+
+env_heat<-as.data.frame(env[,2:13])
+rownames(env_heat)<-env$Site_ID
+Heatmap(t(env_heat),clustering_distance_columns = "euclidean",cluster_rows = FALSE)
+
+```
+
+# NMDS plot of monthly means for all water quality data and all sites 
+# Then Permanova of distanct matrix of monthly means for all parameters High vs Low impact
+
+```{r env_dist, echo=FALSE, warning=FALSE}
 
 library(vegan)
 library(dplyr)
 
-
-env<-read.csv("COI_Final_working/MWQ_monthly.csv",header = T)  ##Import data
+env<-marine_water_quality_2y_pool_0_binning_selectedvar
 env$month<-format(as.Date(env$Dates, format="%Y/%m/%d"),"%m")
+env$month<-as.numeric(env$month)
 env<-env[,c(4,10:22)]
-env<-env %>% group_by(Site_ID,month) %>% summarise(mean(Turbidity),mean(Total_Inorganic_Nitrogen),mean(Salinity),mean(Faecal_Coliforms),mean(Dissolved_Oxygen_mgL))
+
+env<-env %>% group_by(Site_ID,month) %>% summarise(mean(`Phaeo-pigments`),
+                                                   mean(Faecal_Coliforms),
+                                                   mean(Turbidity),
+                                                   mean(Volatile_Suspended_Solids),
+                                                   mean(Orthophosphate_Phosphorus),
+                                                   mean(Ammonia_Nitrogen),
+                                                   mean(Total_Inorganic_Nitrogen),
+                                                   mean(Total_Nitrogen),
+                                                   mean(Total_Kjeldahl_Nitrogen),
+                                                   mean(`5-day_Biochemical_Oxygen_Demand`),
+                                                   mean(Dissolved_Oxygen_mgL),
+                                                   mean(Salinity))
+
+colnames(env)<-c("Site_ID","month","PhP","FC","Turb","VSS","OP","AmN","TIN","TN","TKN","dOD","DO","Sal")
+
+set.seed(26)
+ord<-metaMDS(env[,3:14])
+ggord(ord,env$Site_ID, size =2, alpha_el = 0.1, poly = FALSE)+
+  #geom_point(size = 2)+
+  scale_color_manual(values=c(c1[1:2],c1[4:8]),limits=c("SSW","PC","CI","SW","CDA","BI","TPC"))+
+  scale_fill_manual(values=c(c1[1:2],c1[4:8]),limits=c("SSW","PC","CI","SW","CDA","BI","TPC"))+
+  coord_cartesian(xlim = c(-0.8,0.5), ylim = c(-0.4,0.4))+
+  theme_classic()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=1))
+
 Impact<-c(rep("Low",24),rep("High",36),rep("Med",12),rep("Low",12))
 env$Impact<-Impact
-colnames(env)<-c("Site_ID","month","Turb","TIN","Sal","FC","DO","Impact")
 env<-subset(env,env$Impact != "Med")
-env.mat<-env[,3:7]
+env.mat<-env[,3:14]
 env.dist<-vegdist(env.mat, method="euclidian")
-adonis2(env.dist~Impact,data=env, permutations = 999, strata = env$month)
+anova(betadisper(env.dist, env$Site_ID))
+anova(betadisper(env.dist, env$Impact))
+
+adonis2(env.dist~Impact/Site_ID,data=env, permutations = 999, strata = env$month)
+pairwise.adonis(x=env[,3:14],factors=env$Site_ID,sim.function='vegdist', sim.method='euclidian',p.adjust.m='bonferroni')
+
 
 ```
-
 
 # Plot species accumulation curves for HK Data - All, high impact, low impact
 
@@ -420,6 +498,7 @@ rich1_k$value<-as.numeric(rich1_k$value)
 m1_known <- lme(value~Impact,random=~1|Station_ID/ARMS_ID,data=rich1_k)
 summary(m1_known)
 
+##Phylum specific analysis below after taxa subsetting
 
 ```
 
@@ -470,8 +549,13 @@ HvL_a<-subset_samples(ps_a_pa_2019, Station_ID!="SW")
 HvL_a<- prune_taxa(taxa_sums(HvL_a)>0,HvL_a)
 HvL_a_dist<-phyloseq::distance(HvL_a, method = "jaccard")
 HvL_a_sam<-data.frame(sample_data(HvL_a))
-HvL_a_aov<-adonis(HvL_a_dist ~ Impact/Station_ID, data = HvL_a_sam)
-HvL_a_aov$aov.tab
+
+anova(betadisper(HvL_a_dist, sample_data(HvL_a)$Impact))
+anova(betadisper(HvL_a_dist, sample_data(HvL_a)$Station_ID))
+
+adonis2(HvL_a_dist ~ Impact/Station_ID, data = HvL_a_sam)
+pairwise.adonis(HvL_a_dist,sample_data(HvL_a)$Station_ID,p.adjust.m='bonferroni',perm = 100000)
+
 
 #For known OTUs only
 HvL_a_k<-subset_samples(ps_a_pa_known, Station_ID!="SW")
@@ -567,6 +651,33 @@ ps_moll_s@sam_data$Station_ID<-factor(ps_moll_s@sam_data$Station_ID, levels=c("S
 
 
 ```
+
+# Richness comparisons of High vs. Low impact site for 3 most rich phyla: Arthropoda, Annelida, Mollusca
+
+```{r rich_phyla, echo = FALSE }
+
+x<-c("High","High","High","Low","Low","Low","Low","Low","Low","Low","Low","Low","Med","Med","High","High","High","High","High","High","High","High","High","Low","Low","Low","Low","Low","Low","Low","Low","Low","Med","Med","Med","High","High","High","High","High","High")
+pd_moll_HvL<-pd_moll
+pd_moll_HvL$Impact<-x
+pd_moll_HvL<-subset(pd_moll_HvL,Impact!="Med")
+mod_moll <- lme(SR~Impact,random=~1|Station_ID/ARMS_ID,data=pd_moll_HvL)
+summary(mod_moll)
+
+pd_arth_HvL<-pd_arth
+pd_arth_HvL$Impact<-x
+pd_arth_HvL<-subset(pd_arth_HvL,Impact!="Med")
+mod_arth <- lme(SR~Impact,random=~1|Station_ID/ARMS_ID,data=pd_arth_HvL)
+summary(mod_arth)
+
+pd_ann_HvL<-pd_ann
+pd_ann_HvL$Impact<-x
+pd_ann_HvL<-subset(pd_ann_HvL,Impact!="Med")
+mod_ann <- lme(SR~Impact,random=~1|Station_ID/ARMS_ID,data=pd_ann_HvL)
+summary(mod_ann)
+
+
+```
+
 
 
 # Calculate adjusted phylogenetic distances (MPD and MNTD) for each Phyla on each ARMS 

@@ -5,6 +5,7 @@ Shelby E. McIlroy, Isis Guibert, Anand Archana, Wing Yi Haze Chung, J. Emmett Du
 
 
 Multistep data processing included:
+
 0_Raw sequence data (fastq) for this project are availible on figshare at doi: 10.6084/m9.figshare.24862782 & 10.6084/m9.figshare.24862863
 
 1_RemoveAdaptors - use cutadapt in commandline to gunzip and trim F/R adapters

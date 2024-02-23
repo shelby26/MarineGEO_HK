@@ -1,10 +1,11 @@
 # MarineGEO_HK
-MarineGEO_HK working analyses
+Data and code associated with pubilcation:
+Shelby E. McIlroy, Isis Guibert, Anand Archana, Wing Yi Haze Chung, J. Emmett Duffy, Rinaldi Gotama, Jerome Hui, Nancy Knowlton, Matthieu Leray, Chris Meyer, Gianni Panagiotou, Gustav Paulay, Bayden Russell, Philip D Thompson, David M Baker (2024) Life goes on: spatial heterogeneity promotes biodiversity in an urbanized coastal marine ecosystem. Global Change Biology
 
 
 
 Multistep data processing included:
-0_Raw sequence data are availible on figshare at doi: ####
+0_Raw sequence data (fastq) for this project are availible on figshare at doi: 10.6084/m9.figshare.24862782 & 10.6084/m9.figshare.24862863
 
 1_RemoveAdaptors - use cutadapt in commandline to gunzip and trim F/R adapters
 
